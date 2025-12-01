@@ -8,8 +8,9 @@ bp = Blueprint('users', __name__, url_prefix='/users')
 @bp.before_request
 @token_required
 @admin_required
-def before_request_func():
+def before_request_func(Token_user_id):
     pass
+    
 
 bp.route('/', methods=['GET'])(get_users)
 bp.route('/detail/', methods=['GET'])(get_user)

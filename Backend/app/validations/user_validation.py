@@ -46,7 +46,7 @@ class UserBodyValidationModel(BaseModel):
         extra = 'forbid'
 
 def UserQueryValidation(data: dict):
-    """Valida parámetros de consulta de usuario y retorna errores si los hay"""
+    
     try:
         UserQueryValidationModel(**data)
         return {}
@@ -54,7 +54,7 @@ def UserQueryValidation(data: dict):
         return e.errors()
 
 def UserBodyValidation(data: dict):
-    """Valida datos del cuerpo de usuario y retorna errores si los hay"""
+    
     try:
         UserBodyValidationModel(**data)
         return {}

@@ -16,14 +16,21 @@ class AuthValidationModel(BaseModel):
         return domain_email_validator(v)
 
 class RegisterValidationModel(BaseModel):
-    nombreCompleto: Annotated[str, StringConstraints(min_length=15, max_length=50)]
+    nombre: Annotated[str, StringConstraints(min_length=2, max_length=30)]
+    apellidos: Annotated[str, StringConstraints(min_length=2, max_length=50)]
     correo: Annotated[str, StringConstraints(min_length=15, max_length=35)]
     password: Annotated[str, StringConstraints(min_length=8, max_length=26, pattern=r"^[a-zA-Z0-9]+$")]
 
-    @validator('nombreCompleto')
-    def validate_nombre_completo(cls, v):
+    @validator('nombre')
+    def validate_nombre(cls, v):
         if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", v):
-            raise ValueError("El nombre completo solo puede contener letras y espacios.")
+            raise ValueError("El nombre solo puede contener letras y espacios.")
+        return v
+
+    @validator('apellidos')
+    def validate_apellidos(cls, v):
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", v):
+            raise ValueError("Los apellidos solo pueden contener letras y espacios.")
         return v
 
     @validator('correo')

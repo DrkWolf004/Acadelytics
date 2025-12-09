@@ -27,9 +27,8 @@ def login_service(data):
     return token, None
 
 def register_service(data):
-    nombre_completo = data.get('nombreCompleto', '').split()
-    apellidos = ' '.join(nombre_completo[1:]) if len(nombre_completo) > 1 else nombre_completo[0] if nombre_completo else ''
-    nombre = nombre_completo[0] if nombre_completo else ''
+    nombre = data.get('nombre', '').strip()
+    apellidos = data.get('apellidos', '').strip()
     correo = data.get('correo')
     password = data.get('password')
     rol = data.get('rol', 'Alumno')

@@ -1,4 +1,5 @@
 from app.models.classroom_model import Classroom
+from app.models.classFolder_model import ClassFolder
 from app.models.user_model import user
 from app import db
 from sqlalchemy import or_
@@ -91,12 +92,18 @@ def create_classroom_service(body: Dict[str, Any]) -> Tuple[Optional[Dict[str, A
 
         classroom_obj = Classroom(nombre=nombre.strip(), member_id=mid)
         db.session.add(classroom_obj)
+        db.session.flush()
+
+        # Crear y vincular ClassFolder para este classroom
+        cf_obj = ClassFolder(classroom_id=classroom_obj.id)
+        db.session.add(cf_obj)
         db.session.commit()
 
         data = {
             'id': classroom_obj.id,
             'nombre': classroom_obj.nombre,
             'member_id': classroom_obj.member_id,
+            'classfolder_id': cf_obj.id,
             'created_at': classroom_obj.created_at,
             'updated_at': classroom_obj.updated_at
         }

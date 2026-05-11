@@ -20,6 +20,11 @@ cd Acadelytics
 docker compose up
 ```
 
+## Puertos
+- Base de datos: 5432
+- Backend: 5000
+- Frontend: 4173
+
 ## Estructura del proyecto
 ```
 Acadelytics/

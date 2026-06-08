@@ -8,6 +8,11 @@ from routes import register_routes
 app = Flask(__name__)
 register_routes(app)
 
+# Ensure database connectivity and schema creation when Gunicorn imports the app.
+connect_db()
+init_db()
+create_initial_users()
+
 @app.route('/')
 def index():
     return {'status': 'ok', 'message': 'Backend activo'}

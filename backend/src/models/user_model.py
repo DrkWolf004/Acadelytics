@@ -2,6 +2,7 @@ import enum
 from datetime import datetime
 
 from sqlalchemy import Column, DateTime, Enum, Integer, String
+from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import Base
@@ -24,6 +25,32 @@ class UserModel(Base):
     rol = Column(Enum(UserRole), nullable=False, default=UserRole.Alumno)
     create_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     update_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    classrooms = relationship(
+        "ClassroomModel",
+        secondary="classroom_students",
+        back_populates="students",
+    )
+    classroom_links = relationship(
+        "ClassroomStudentModel",
+        back_populates="student",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    sent_invitations = relationship(
+        "ClassroomInvitationModel",
+        foreign_keys="[ClassroomInvitationModel.sender_id]",
+        back_populates="sender",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    received_invitations = relationship(
+        "ClassroomInvitationModel",
+        foreign_keys="[ClassroomInvitationModel.receiver_id]",
+        back_populates="receiver",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self) -> str:
         return f"<UserModel id={self.id} correo={self.correo} rol={self.rol.value}>"

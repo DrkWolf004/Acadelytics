@@ -10,6 +10,7 @@ def create_access_token(user_data: dict, expires_in_minutes: int = 60) -> str:
 
     payload = {
         "sub": str(user_data.get("id")) if user_data.get("id") is not None else None,
+        "id": user_data.get("id"),
         "correo": user_data.get("correo"),
         "rol": user_data.get("rol"),
         "exp": datetime.utcnow() + timedelta(minutes=expires_in_minutes),

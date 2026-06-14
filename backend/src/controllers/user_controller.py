@@ -23,12 +23,18 @@ def register_user_controller(request_data: dict):
 
     try:
         user = create_user(request_data)
+        token = create_access_token({
+            "id": user.id,
+            "correo": user.correo,
+            "rol": user.rol.value,
+        })
         return handle_success(201, "Usuario registrado correctamente.", {
             "id": user.id,
             "nombre": user.nombre,
             "apellido": user.apellido,
             "correo": user.correo,
             "rol": user.rol.value,
+            "token": token,
             "create_at": user.create_at.isoformat(),
             "update_at": user.update_at.isoformat(),
         })

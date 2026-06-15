@@ -300,6 +300,7 @@ export async function renderAdminPage(root: HTMLElement) {
   if (sidebarNav) {
     sidebarNav.innerHTML = `
       <a href="#/dashboard" data-router class="nav-link">Inicio</a>
+      <a href="#/classrooms" data-router class="nav-link">Classrooms</a>
       <a href="#/profile" data-router class="nav-link">Perfil</a>
       <a href="#/admin/users" data-router class="nav-link">Usuarios</a>
     `

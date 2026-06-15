@@ -38,44 +38,93 @@ La aplicación estará disponible en http://localhost:4173
 ## Estructura del proyecto
 ```
 Acadelytics/
+├── docker-compose.yml
+├── README.md
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── wait-for-db.sh
+│   ├── uploads/
+│   │   └── {class_folder_id}/
+│   │       └── {uuid_filename}
 │   └── src/
 │       ├── app.py
 │       ├── config/
+│       │   ├── __init__.py
 │       │   ├── configDb.py
 │       │   ├── configEnv.py
-│       │   ├── initial_setup.py
-│       │   └── .env
+│       │   └── initial_setup.py
 │       ├── controllers/
+│       │   ├── __init__.py
+│       │   ├── class_folder_controller.py
+│       │   ├── classroom_controller.py
+│       │   ├── classroom_invitation_controller.py
+│       │   ├── file_controller.py
+│       │   └── user_controller.py
 │       ├── handlers/
+│       │   └── response_handlers.py
 │       ├── middlewares/
+│       │   ├── __init__.py
+│       │   ├── authentication.py
+│       │   └── authorization.py
 │       ├── models/
+│       │   ├── __init__.py
+│       │   ├── class_folder_model.py
+│       │   ├── classroom_invitation_model.py
+│       │   ├── classroom_model.py
+│       │   ├── classroom_student_model.py
+│       │   ├── file_model.py
+│       │   └── user_model.py
 │       ├── routes/
+│       │   ├── __init__.py
+│       │   ├── auth_routes.py
+│       │   ├── class_folder_routes.py
+│       │   ├── classroom_invitation_routes.py
+│       │   ├── classroom_routes.py
+│       │   ├── file_routes.py
+│       │   └── user_routes.py
 │       ├── services/
+│       │   ├── __init__.py
+│       │   ├── auth_service.py
+│       │   ├── class_folder_service.py
+│       │   ├── classroom_invitation_service.py
+│       │   ├── classroom_service.py
+│       │   ├── file_service.py
+│       │   └── user_service.py
 │       └── validations/
+│           ├── __init__.py
+│           ├── class_folder_validation.py
+│           ├── classroom_invitation_validation.py
+│           ├── classroom_validation.py
+│           ├── file_validation.py
+│           └── user_validation.py
 ├── frontend/
 │   ├── Dockerfile
+│   ├── index.html
 │   ├── package.json
+│   ├── tsconfig.json
+│   ├── public/
 │   └── src/
 │       ├── app.ts
+│       ├── main.ts
+│       ├── modal.ts
+│       ├── style.css
+│       ├── types.ts
+│       ├── fileUpload.ts
+│       ├── hooks/
+│       │   └── useLocalStorage.ts
 │       ├── pages/
-│       │   ├── dashboard.ts
-│       │   ├── profile.ts
 │       │   ├── admin.ts
+│       │   ├── classrooms.ts
+│       │   ├── dashboard.ts
+│       │   ├── home.ts
 │       │   ├── login.ts
-│       │   ├── register.ts
-│       │   └── home.ts
-│       ├── services/
-│       │   ├── api.ts
-│       │   ├── authService.ts
-│       │   └── userService.ts
-│       └── hooks/
-│           └── useLocalStorage.ts
-├── docker-compose.yml
-├── .env
-├── .env.example
-└── README.md
+│       │   ├── profile.ts
+│       │   └── register.ts
+│       └── services/
+│           ├── api.ts
+│           ├── authService.ts
+│           ├── classroomService.ts
+│           ├── fileService.ts
+│           └── userService.ts
 ```

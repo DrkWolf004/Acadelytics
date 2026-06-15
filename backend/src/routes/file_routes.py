@@ -6,10 +6,22 @@ from controllers.file_controller import (
     edit_file_controller,
     get_file_by_id_controller,
     get_files_controller,
+    upload_file_controller,
 )
 from middlewares.authentication import authenticate_jwt
 
 file_blueprint = Blueprint("file_blueprint", __name__)
+
+
+@file_blueprint.route("/upload/<int:class_folder_id>", methods=["POST"], strict_slashes=False)
+@authenticate_jwt
+def upload_file_route(class_folder_id: int):
+    """Upload a file to a specific class folder."""
+    if "file" not in request.files:
+        return {"status": "error", "message": "No file part provided", "code": 400}, 400
+    
+    file = request.files["file"]
+    return upload_file_controller(class_folder_id, file)
 
 
 @file_blueprint.route("", methods=["POST"], strict_slashes=False)

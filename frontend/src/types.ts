@@ -42,6 +42,32 @@ export type UserPayload = {
   newPassword?: string
 }
 
+export type Classroom = {
+  id: number
+  nombre: string
+  type: string
+  class_folder_id: number | null
+  create_at: string
+  update_at: string
+}
+
+export type ClassroomMember = {
+  id: number
+  nombre: string
+  apellido: string
+  correo: string
+  rol: string
+}
+
+export type FileRecord = {
+  id: number
+  class_folder_id: number
+  filename: string
+  secure_name: string
+  filepath: string
+  upload_at: string
+}
+
 export type RequestResult<T> = {
   ok: boolean
   data?: T

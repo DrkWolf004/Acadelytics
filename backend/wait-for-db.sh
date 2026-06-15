@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 echo "Esperando a que PostgreSQL esté disponible en $DB_HOST:5432..."

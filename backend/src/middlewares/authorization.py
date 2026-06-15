@@ -40,5 +40,28 @@ def is_profesor(func):
     return _require_role("Profesor")(func)
 
 
+def is_profesor_or_admin(func):
+    def wrapper(*args, **kwargs):
+        user = getattr(g, "current_user", None)
+        if user is None:
+            return handle_error_client(
+                401,
+                "No tienes permiso para acceder a este recurso",
+                {"info": "Usuario no autenticado."},
+            )
+
+        rol = user.get("rol")
+        if rol not in ("Profesor", "Admin"):
+            return handle_error_client(
+                403,
+                "Error al acceder al recurso",
+                {"info": "Se requiere un rol de Profesor o Admin."},
+            )
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def is_alumno(func):
     return _require_role("Alumno")(func)

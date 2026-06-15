@@ -78,8 +78,6 @@ Acadelytics/
 ├── .env
 ├── .env.example
 └── README.md
-```
-
 ├── docker-compose.yml
 └── README.md
 ```

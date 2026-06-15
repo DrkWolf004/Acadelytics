@@ -86,6 +86,15 @@ export function renderDashboardPage(root: HTMLElement) {
   sidebarClose?.addEventListener('click', () => {
     document.body.classList.remove('sidebar-open')
   })
+  const sidebarNav = document.querySelector<HTMLDivElement>('.sidebar-nav')
+  if (sidebarNav) {
+    sidebarNav.innerHTML = `
+      <a href="#/dashboard" data-router class="nav-link">Inicio</a>
+      <a href="#/profile" data-router class="nav-link">Perfil</a>
+      ${currentUser?.rol === 'Admin' ? '<a href="#/admin/users" data-router class="nav-link">Usuarios</a>' : ''}
+    `
+  }
+
   const sidebarLogout = document.querySelector<HTMLButtonElement>('#sidebar-logout')
   sidebarLogout?.addEventListener('click', () => {
     clearAuthStorage()

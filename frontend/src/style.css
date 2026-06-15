@@ -242,9 +242,88 @@ a {
 .notif-actions { display:flex; gap:8px }
 
 /* small button variants for accept/reject */
-.button.small { padding: 6px 10px; border-radius: 8px; font-size: 0.95rem }
-.button.small.primary { background: var(--accent); color: #fff; border:none }
-.button.small.outline { background: transparent; border:1px solid var(--border); color: var(--text) }
+.button.small {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+.button.small.primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+.button.small.outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.button.icon-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  border-radius: 14px;
+}
+.button.icon-button svg {
+  display: block;
+}
+.button.danger.icon-button {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.button.danger.icon-button:hover {
+  background: rgba(220, 38, 38, 0.9);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  width: min(100%, 560px);
+  max-width: 95vw;
+  max-height: 90vh;
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  position: relative;
+  overflow: auto;
+}
+
+.modal-dialog h2 {
+  margin-top: 0;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.modal-close:hover {
+  background: var(--surface-strong);
+  transform: translateY(-1px);
+}
 
 .hero-actions {
   display: flex;
@@ -271,6 +350,42 @@ a {
   padding: 18px 22px;
   background: var(--surface-strong);
   color: var(--text);
+}
+
+.search-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.search-form label input,
+.search-form label select {
+  width: 260px;
+  min-width: 190px;
+  max-width: 320px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-strong);
+  color: var(--text);
+}
+
+.search-form label input:focus,
+.search-form label select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+@media (max-width: 760px) {
+  .search-form label {
+    width: 100%;
+  }
+  .search-form label input,
+  .search-form label select {
+    width: 100%;
+  }
 }
 
 .hero-buttons {
@@ -304,6 +419,78 @@ a {
   border: 1px solid var(--accent);
   color: var(--accent);
   background: transparent;
+}
+
+.button.danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+}
+
+.confirm-dialog {
+  width: min(100%, 560px);
+  max-width: 95vw;
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+  position: relative;
+}
+
+.confirm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.confirm-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.confirm-close {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.confirm-close:hover {
+  background: var(--surface-strong);
+}
+
+.confirm-body p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
 }
 
 .services-section,
@@ -362,11 +549,40 @@ a {
   margin-top: 18px;
 }
 
+.profile-meta {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 18px 20px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.profile-meta div {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.96rem;
+}
+
+.profile-meta strong {
+  color: var(--text-h);
+}
+
 .auth-form label {
   display: grid;
   gap: 8px;
   text-align: left;
   color: var(--text);
+}
+
+.static-value {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  font-weight: 700;
+  color: var(--text-h);
 }
 
 .auth-form input,
@@ -465,6 +681,34 @@ body.sidebar-open .sidebar {
 .sidebar-inner { position: relative; height: 100%; display:flex; flex-direction:column; gap:18px }
 .sidebar-header { display:flex; align-items:center; gap:12px }
 .sidebar-brand { font-weight:800; padding:8px 12px; border-radius:10px; background:transparent; color:var(--text-h); font-size:1.05rem }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.sidebar-nav .nav-link {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface-strong);
+  border: 1px solid transparent;
+  color: var(--text-h);
+  font-weight: 700;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.18s ease;
+}
+.sidebar-nav .nav-link:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateX(2px);
+}
+.sidebar-nav .nav-link.active,
+.sidebar-nav .nav-link.active:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
 .sidebar-close {
   background: var(--accent-soft);
   border: 1px solid rgba(29,78,216,0.12);
@@ -486,8 +730,59 @@ body.sidebar-open .sidebar {
   color: #fff;
 }
 .sidebar-spacer { flex: 1 }
-.sidebar-logout { background: transparent; border: 1px solid var(--border); padding: 10px 12px; border-radius: 10px; color: var(--muted); cursor: pointer }
-.sidebar-logout:hover { background: var(--surface-strong); color: var(--text) }
+.sidebar-logout {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.18s ease;
+}
+.sidebar-logout:hover { background: var(--accent-soft); transform: translateY(-1px); }
+.page-profile .auth-card,
+.page-admin .auth-card {
+  width: 100%;
+  max-width: 980px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.table th {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--text-h);
+  font-weight: 700;
+}
+.table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.06);
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+.table button {
+  margin-right: 8px;
+}
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.admin-actions .button {
+  min-height: 48px;
+}
 
 .dashboard-title {
   margin: 0;

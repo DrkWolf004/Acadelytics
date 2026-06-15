@@ -3,16 +3,16 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres}"
-      POSTGRES_DB: "${POSTGRES_DB:-acadelytics}"
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-postgres}"
+      POSTGRES_DB: "${DB_NAME:-acadelytics}"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-acadelytics}"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 10s
     networks:
       - acadelytics-network
@@ -28,14 +28,18 @@ services:
     ports:
       - "${BACKEND_PORT:-5000}:5000"
     environment:
-      HOST: "${BACKEND_HOST:-0.0.0.0}"
-      PORT: "${BACKEND_PORT:-5000}"
+      HOST: "0.0.0.0"
+      PORT: "5000"
+      DB_USER: "${DB_USER:-postgres}"
+      DB_PASSWORD: "${DB_PASSWORD:-postgres}"
+      DB_NAME: "${DB_NAME:-acadelytics}"
+      DB_HOST: "db"
       DB_USERNAME: "${DB_USER:-postgres}"
       PASSWORD: "${DB_PASSWORD:-postgres}"
       DATABASE: "${DB_NAME:-acadelytics}"
-      DB_HOST: "${DB_HOST:-db}"
-      ACCESS_TOKEN_SECRET: "${ACCESS_TOKEN_SECRET:-supersecret}"
-      cookieKey: "${COOKIE_KEY:-supersecret_cookie}"
+      ACCESS_TOKEN_SECRET: "${ACCESS_TOKEN_SECRET:-supersecret_jwt_key}"
+      COOKIE_KEY: "${COOKIE_KEY:-supersecret_cookie_key}"
+      PYTHONUNBUFFERED: "1"
     networks:
       - acadelytics-network
 

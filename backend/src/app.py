@@ -7,22 +7,33 @@ from models import init_db
 from routes import register_routes
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:4173", "http://127.0.0.1:4173"], "supports_credentials": True}})
+CORS(app, resources={r"/api/*": {"origins": ["http://localhost:4173", "http://127.0.0.1:4173", "http://localhost:5173", "http://127.0.0.1:5173"], "supports_credentials": True}})
 register_routes(app)
-
-connect_db()
-init_db()
-create_initial_users()
 
 @app.route('/')
 def index():
     return {'status': 'ok', 'message': 'Backend activo'}
 
+@app.before_request
+def initialize_db():
+    if not hasattr(app, '_db_initialized'):
+        try:
+            connect_db()
+            init_db()
+            create_initial_users()
+            app._db_initialized = True
+        except Exception as e:
+            print(f"Error inicializando BD: {e}")
+            return {'status': 'error', 'message': 'Error de base de datos'}, 503
 
 def main():
-    connect_db()
-    init_db()
-    create_initial_users()
+    try:
+        connect_db()
+        init_db()
+        create_initial_users()
+    except Exception as e:
+        print(f"Advertencia inicial: {e}")
+    
     app.run(host=HOST or '0.0.0.0', port=int(PORT or 5000), debug=False)
 
 

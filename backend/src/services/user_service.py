@@ -12,6 +12,7 @@ def create_user(payload: dict) -> UserModel:
             apellido=payload["apellido"].strip(),
             correo=payload["correo"].strip().lower(),
             rol=UserRole(payload.get("rol", "Alumno")),
+            role_changes_remaining=payload.get("role_changes_remaining", 3),
         )
         new_user.set_password(payload["password"])
 
@@ -65,6 +66,8 @@ def update_user(user_id: int, payload: dict) -> UserModel | None:
             user.correo = payload["correo"].strip().lower()
         if "rol" in payload:
             user.rol = UserRole(payload["rol"])
+        if "role_changes_remaining" in payload:
+            user.role_changes_remaining = payload["role_changes_remaining"]
         if payload.get("newPassword"):
             user.set_password(payload["newPassword"])
         elif payload.get("password"):

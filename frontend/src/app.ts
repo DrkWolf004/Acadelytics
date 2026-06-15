@@ -2,6 +2,8 @@ import { renderDashboardPage } from './pages/dashboard'
 import { renderHomePage } from './pages/home'
 import { renderLoginPage } from './pages/login'
 import { renderRegisterPage } from './pages/register'
+import { renderProfilePage } from './pages/profile'
+import { renderAdminPage } from './pages/admin'
 import { getTheme, setTheme, getNotifications, removeNotification } from './hooks/useLocalStorage'
 
 const root = document.querySelector<HTMLDivElement>('#app')!
@@ -12,6 +14,8 @@ const routes: Record<string, () => void> = {
   '#/login': () => renderLoginPage(root),
   '#/register': () => renderRegisterPage(root),
   '#/dashboard': () => renderDashboardPage(root),
+  '#/profile': () => renderProfilePage(root),
+  '#/admin/users': () => renderAdminPage(root),
 }
 
 function renderCurrentRoute() {
@@ -36,9 +40,24 @@ function setupRouteLinks() {
   })
 }
 
+function setupSidebarCloseOnOutsideClick() {
+  document.body.addEventListener('click', (event) => {
+    const sidebar = document.querySelector<HTMLElement>('.sidebar')
+    const navToggle = document.querySelector<HTMLButtonElement>('#nav-toggle')
+    if (!sidebar || !document.body.classList.contains('sidebar-open')) return
+
+    const target = event.target as HTMLElement
+    if (!target) return
+    if (sidebar.contains(target) || navToggle?.contains(target)) return
+
+    document.body.classList.remove('sidebar-open')
+  })
+}
+
 window.addEventListener('hashchange', renderCurrentRoute)
 window.addEventListener('load', () => {
   setupRouteLinks()
+  setupSidebarCloseOnOutsideClick()
   renderCurrentRoute()
 })
 
@@ -115,6 +134,9 @@ export function renderHeaderControls(currentTheme: 'light' | 'dark') {
   const container = document.querySelector<HTMLDivElement>('#header-controls')
   if (!container) return
 
+  const isHomePage = ['', '#/', '#'].includes(window.location.hash)
+  const showNotifications = !isHomePage
+
   container.innerHTML = `
     <div class="header-controls-inner">
       <div id="theme-switch" class="theme-switch" role="switch" aria-checked="${currentTheme === 'dark'}">
@@ -138,6 +160,7 @@ export function renderHeaderControls(currentTheme: 'light' | 'dark') {
           </svg>
         </span>
       </div>
+      ${showNotifications ? `
       <div class="notif">
         <button id="notif-button" class="notif-btn" aria-expanded="false">
           <span class="icon icon-bell" aria-hidden="true">
@@ -150,12 +173,13 @@ export function renderHeaderControls(currentTheme: 'light' | 'dark') {
         </button>
         <div id="notif-panel" class="notif-panel hidden"></div>
       </div>
+      ` : ''}
     </div>
   `
 
   const switchEl = document.querySelector<HTMLDivElement>('#theme-switch')
-  const notifBtn = document.querySelector<HTMLButtonElement>('#notif-button')
-  const notifPanel = document.querySelector<HTMLDivElement>('#notif-panel')
+  const notifBtn = showNotifications ? document.querySelector<HTMLButtonElement>('#notif-button') : null
+  const notifPanel = showNotifications ? document.querySelector<HTMLDivElement>('#notif-panel') : null
 
   switchEl?.addEventListener('click', () => {
     handleThemeToggle()

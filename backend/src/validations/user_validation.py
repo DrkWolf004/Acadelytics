@@ -4,7 +4,7 @@ ALLOWED_USER_ROLES = {"Alumno", "Profesor", "Admin"}
 REGISTER_USER_ROLES = {"Alumno", "Profesor"}
 VALID_EMAIL_DOMAINS = ["@gmail.cl", "@gmail.com", "@hotmail.cl", "@hotmail.com", "@acadelytics.com"]
 NAME_PATTERN = re.compile(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$")
-PASSWORD_PATTERN = re.compile(r"^[a-zA-Z0-9]+$")
+PASSWORD_PATTERN = re.compile(r"^[^\s]+$")
 
 
 def _validate_email_domain(email: str) -> str | None:
@@ -85,6 +85,38 @@ def validate_register_data(payload: dict) -> tuple[bool, dict]:
     return (len(errors) == 0, errors)
 
 
+def validate_admin_create_data(payload: dict) -> tuple[bool, dict]:
+    errors: dict = {}
+
+    nombre_error = _validate_name("nombre", payload.get("nombre"), required=True)
+    if nombre_error:
+        errors["nombre"] = nombre_error
+
+    apellido_error = _validate_name("apellido", payload.get("apellido"), required=True)
+    if apellido_error:
+        errors["apellido"] = apellido_error
+
+    correo_error = _validate_email_domain(payload.get("correo"))
+    if correo_error:
+        errors["correo"] = correo_error
+
+    password_error = _validate_password("password", payload.get("password"), required=True)
+    if password_error:
+        errors["password"] = password_error
+
+    rol_value = payload.get("rol", "Alumno")
+    rol_error = _validate_role(rol_value, required=True)
+    if rol_error:
+        errors["rol"] = rol_error
+
+    if "role_changes_remaining" in payload:
+        value = payload.get("role_changes_remaining")
+        if not isinstance(value, int) or value < 0 or value > 3:
+            errors["role_changes_remaining"] = "Los cambios de rol deben ser un número entero entre 0 y 3."
+
+    return (len(errors) == 0, errors)
+
+
 def validate_login_data(payload: dict) -> tuple[bool, dict]:
     errors: dict = {}
 
@@ -131,6 +163,11 @@ def validate_update_data(payload: dict) -> tuple[bool, dict]:
         rol_error = _validate_role(payload.get("rol"), required=False)
         if rol_error:
             errors["rol"] = rol_error
+
+    if "role_changes_remaining" in payload:
+        value = payload.get("role_changes_remaining")
+        if not isinstance(value, int) or value < 0 or value > 3:
+            errors["role_changes_remaining"] = "Los cambios de rol deben ser un número entero entre 0 y 3."
 
     return (len(errors) == 0, errors)
 

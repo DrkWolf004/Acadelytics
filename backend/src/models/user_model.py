@@ -23,6 +23,7 @@ class UserModel(Base):
     correo = Column(String(150), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
     rol = Column(Enum(UserRole), nullable=False, default=UserRole.Alumno)
+    role_changes_remaining = Column(Integer, nullable=False, default=3)
     create_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     update_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 

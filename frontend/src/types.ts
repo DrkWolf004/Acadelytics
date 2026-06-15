@@ -8,6 +8,7 @@ export type RegisterPayload = {
   apellido: string
   correo: string
   password: string
+  rol: string
 }
 
 export type AuthResponse = {
@@ -16,7 +17,29 @@ export type AuthResponse = {
   apellido: string
   correo: string
   rol: string
+  role_changes_remaining: number
   token: string
+}
+
+export type User = {
+  id: number
+  nombre: string
+  apellido: string
+  correo: string
+  rol: string
+  role_changes_remaining: number
+  create_at: string
+  update_at: string
+}
+
+export type UserPayload = {
+  nombre: string
+  apellido: string
+  correo: string
+  rol: string
+  role_changes_remaining?: number
+  password?: string
+  newPassword?: string
 }
 
 export type RequestResult<T> = {

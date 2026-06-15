@@ -13,6 +13,7 @@ def create_initial_users():
             apellido="Admin",
             correo="admin@acadelytics.com",
             rol=UserRole.Admin,
+            role_changes_remaining=3,
         )
         admin_user.set_password("admin1234")
 
@@ -21,6 +22,7 @@ def create_initial_users():
             apellido="Ejemplo",
             correo="alumno@acadelytics.com",
             rol=UserRole.Alumno,
+            role_changes_remaining=3,
         )
         alumno_user.set_password("alumno1234")
 
@@ -29,6 +31,7 @@ def create_initial_users():
             apellido="Ejemplo",
             correo="profesor@acadelytics.com",
             rol=UserRole.Profesor,
+            role_changes_remaining=3,
         )
         profesor_user.set_password("profesor1234")
 

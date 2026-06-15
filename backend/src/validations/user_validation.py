@@ -77,7 +77,8 @@ def validate_register_data(payload: dict) -> tuple[bool, dict]:
     if password_error:
         errors["password"] = password_error
 
-    rol_error = _validate_role(payload.get("rol"), required=True, allowed_roles=REGISTER_USER_ROLES)
+    rol_value = payload.get("rol", "Alumno")
+    rol_error = _validate_role(rol_value, required=True, allowed_roles=REGISTER_USER_ROLES)
     if rol_error:
         errors["rol"] = rol_error
 

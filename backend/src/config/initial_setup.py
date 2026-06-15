@@ -1,4 +1,13 @@
+import os
+
 from models import SessionLocal, UserModel, UserRole
+
+
+def create_uploads_folder():
+    """Ensure uploads folder exists."""
+    uploads_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+    os.makedirs(uploads_dir, exist_ok=True)
+    print(f"=> Carpeta de uploads disponible en: {uploads_dir}")
 
 
 def create_initial_users():

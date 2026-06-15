@@ -9,10 +9,10 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 COPY src/ ./src
 COPY wait-for-db.sh ./
-RUN chmod +x ./wait-for-db.sh
+RUN chmod +x ./wait-for-db.sh && sed -i 's/\r$//' ./wait-for-db.sh
 
 ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
 WORKDIR /app/src
-CMD ["/app/wait-for-db.sh"]
+CMD ["sh", "/app/wait-for-db.sh"]

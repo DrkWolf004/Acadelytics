@@ -79,6 +79,7 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
   if (sidebarNav) {
     sidebarNav.innerHTML = `
       <a href="#/dashboard" data-router class="nav-link">Inicio</a>
+      <a href="#/classrooms" data-router class="nav-link">Classrooms</a>
       <a href="#/profile" data-router class="nav-link">Perfil</a>
       ${userData.rol === 'Admin' ? '<a href="#/admin/users" data-router class="nav-link">Usuarios</a>' : ''}
     `

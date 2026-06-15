@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from config.configEnv import HOST, PORT
 from config.configDb import connect_db
-from config.initial_setup import create_initial_users
+from config.initial_setup import create_initial_users, create_uploads_folder
 from models import init_db
 from routes import register_routes
 
@@ -18,6 +18,7 @@ def index():
 def initialize_db():
     if not hasattr(app, '_db_initialized'):
         try:
+            create_uploads_folder()
             connect_db()
             init_db()
             create_initial_users()
@@ -28,6 +29,7 @@ def initialize_db():
 
 def main():
     try:
+        create_uploads_folder()
         connect_db()
         init_db()
         create_initial_users()

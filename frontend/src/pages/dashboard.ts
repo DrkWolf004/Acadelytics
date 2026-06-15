@@ -1,12 +1,14 @@
 import { getAuthUser, getTheme, clearAuthStorage } from '../hooks/useLocalStorage'
 import { renderHeaderControls } from '../app'
+import { getUserClassrooms } from '../services/classroomService'
 
-export function renderDashboardPage(root: HTMLElement) {
+export async function renderDashboardPage(root: HTMLElement) {
   const currentUser = getAuthUser()
   const fullName = currentUser ? `${currentUser.nombre} ${currentUser.apellido}` : 'Usuario'
 
-  const coursesActive = 0
-  const coursesList: string[] = []
+  const classroomsResult = await getUserClassrooms()
+  const coursesList: string[] = classroomsResult.ok ? (classroomsResult.data ?? []).map((classroom) => classroom.nombre) : []
+  const coursesActive = classroomsResult.ok ? coursesList.length : 0
   const activity = { weekly: 0, monthly: 0, annual: 0 }
 
   root.innerHTML = `
@@ -90,6 +92,7 @@ export function renderDashboardPage(root: HTMLElement) {
   if (sidebarNav) {
     sidebarNav.innerHTML = `
       <a href="#/dashboard" data-router class="nav-link">Inicio</a>
+      <a href="#/classrooms" data-router class="nav-link">Classrooms</a>
       <a href="#/profile" data-router class="nav-link">Perfil</a>
       ${currentUser?.rol === 'Admin' ? '<a href="#/admin/users" data-router class="nav-link">Usuarios</a>' : ''}
     `

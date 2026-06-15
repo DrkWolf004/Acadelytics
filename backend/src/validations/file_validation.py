@@ -2,7 +2,7 @@ import os
 
 from .classroom_validation import _validate_id
 
-ALLOWED_FILE_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".jpg", ".jpeg", ".png", ".zip", ".rar"}
+ALLOWED_FILE_EXTENSIONS = {".docx", ".xlsx", ".pptx", ".pdf", ".jpg", ".jpeg", ".png", ".zip", ".rar"}
 
 
 def _validate_string(field: str, value: str, required: bool = True) -> str | None:

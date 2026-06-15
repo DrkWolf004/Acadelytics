@@ -4,16 +4,18 @@ import { renderLoginPage } from './pages/login'
 import { renderRegisterPage } from './pages/register'
 import { renderProfilePage } from './pages/profile'
 import { renderAdminPage } from './pages/admin'
+import { renderClassroomsPage } from './pages/classrooms'
 import { getTheme, setTheme, getNotifications, removeNotification } from './hooks/useLocalStorage'
 
 const root = document.querySelector<HTMLDivElement>('#app')!
 
-const routes: Record<string, () => void> = {
+const routes: Record<string, () => void | Promise<void>> = {
   '': () => renderHomePage(root),
   '#/': () => renderHomePage(root),
   '#/login': () => renderLoginPage(root),
   '#/register': () => renderRegisterPage(root),
   '#/dashboard': () => renderDashboardPage(root),
+  '#/classrooms': () => renderClassroomsPage(root),
   '#/profile': () => renderProfilePage(root),
   '#/admin/users': () => renderAdminPage(root),
 }

@@ -5,7 +5,8 @@ import { renderRegisterPage } from './pages/register'
 import { renderProfilePage } from './pages/profile'
 import { renderAdminPage } from './pages/admin'
 import { renderClassroomsPage } from './pages/classrooms'
-import { getTheme, setTheme, getNotifications, removeNotification } from './hooks/useLocalStorage'
+import { getTheme, setTheme, /*getNotifications,*/ getAuthUser } from './hooks/useLocalStorage'
+import { getReceivedInvitations, respondInvitation } from './services/invitationService'
 
 const root = document.querySelector<HTMLDivElement>('#app')!
 
@@ -20,8 +21,24 @@ const routes: Record<string, () => void | Promise<void>> = {
   '#/admin/users': () => renderAdminPage(root),
 }
 
+function isProtectedRoute(hash: string) {
+  return ['#/dashboard', '#/classrooms', '#/profile', '#/admin/users'].includes(hash)
+}
+
 function renderCurrentRoute() {
   const hash = window.location.hash || '#/'
+  const currentUser = getAuthUser()
+
+  if (isProtectedRoute(hash) && !currentUser) {
+    window.location.hash = '#/'
+    return
+  }
+
+  if ((hash === '#/login' || hash === '#/register') && currentUser) {
+    window.location.hash = '#/dashboard'
+    return
+  }
+
   const route = routes[hash] ?? renderHomePage
   route()
   renderHeaderControls(getTheme())
@@ -63,12 +80,21 @@ window.addEventListener('load', () => {
   renderCurrentRoute()
 })
 
-function buildNotificationsPanel(): HTMLElement {
+async function buildNotificationsPanel(): Promise<HTMLElement> {
   const panel = document.createElement('div')
   panel.className = 'notif-panel-content'
 
-  const notifs = getNotifications()
-  if (!notifs || notifs.length === 0) {
+  const currentUser = getAuthUser()
+  let notifsData: any[] = []
+
+  if (currentUser) {
+    const res = await getReceivedInvitations()
+    if (res.ok && Array.isArray(res.data)) {
+      notifsData = res.data
+    }
+  }
+
+  if (!notifsData || notifsData.length === 0) {
     const p = document.createElement('p')
     p.className = 'notif-empty'
     p.textContent = 'No tienes invitaciones a classrooms'
@@ -78,13 +104,42 @@ function buildNotificationsPanel(): HTMLElement {
 
   const list = document.createElement('div')
   list.className = 'notif-list'
-  notifs.forEach((n) => {
+  notifsData.forEach((n) => {
     const item = document.createElement('div')
     item.className = 'notif-item'
 
     const info = document.createElement('div')
     info.className = 'notif-info'
-    info.innerHTML = `<strong>${n.inviterNombre} ${n.inviterApellido}</strong> te invitó a <em>${n.classroomName}</em>`
+    const senderFirst = n.sender_nombre || (n.sender && n.sender.nombre) || ''
+    const senderLast = n.sender_apellido || (n.sender && n.sender.apellido) || ''
+    const senderDisplay = (senderFirst || senderLast) ? `${senderFirst} ${senderLast}`.trim() : 'Usuario'
+    const classroomDisplay = n.classroom_name || (n.classroom && n.classroom.nombre) || n.classroomName || 'classroom'
+    const createdAt = n.create_at || n.createAt || n.createdAt || null
+    let dateHtml = ''
+    if (createdAt) {
+      try {
+        let raw = String(createdAt)
+        const noTz = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(raw)
+        if (noTz) raw = raw + 'Z'
+
+        const d = new Date(raw)
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || undefined
+        const formatter = new Intl.DateTimeFormat('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: tz,
+        })
+        dateHtml = `<div class="notif-date">${formatter.format(d)}</div>`
+      } catch (e) {
+        dateHtml = `<div class="notif-date">${new Date(createdAt).toLocaleString()}</div>`
+      }
+    }
+    info.innerHTML = `<strong>${senderDisplay}</strong> te invitó a <em>${classroomDisplay}</em>${dateHtml}`
 
     const actions = document.createElement('div')
     actions.className = 'notif-actions'
@@ -92,16 +147,16 @@ function buildNotificationsPanel(): HTMLElement {
     const accept = document.createElement('button')
     accept.className = 'button primary small'
     accept.textContent = '✓'
-    accept.addEventListener('click', () => {
-      removeNotification(n.id)
+    accept.addEventListener('click', async () => {
+      await respondInvitation(Number(n.id), 'aceptada')
       refreshNotifPanel()
     })
 
     const reject = document.createElement('button')
     reject.className = 'button outline small'
     reject.textContent = '✕'
-    reject.addEventListener('click', () => {
-      removeNotification(n.id)
+    reject.addEventListener('click', async () => {
+      await respondInvitation(Number(n.id), 'rechazada')
       refreshNotifPanel()
     })
 
@@ -117,18 +172,28 @@ function buildNotificationsPanel(): HTMLElement {
   return panel
 }
 
-function refreshNotifPanel() {
+async function refreshNotifPanel() {
   const badge = document.querySelector<HTMLSpanElement>('.notif-badge')
   const panel = document.querySelector<HTMLDivElement>('#notif-panel')
   if (!badge || !panel) return
 
-  const notifs = getNotifications()
-  const count = notifs.length
+  const currentUser = getAuthUser()
+  if (!currentUser) {
+    badge.style.display = 'none'
+    panel.innerHTML = ''
+    const p = document.createElement('p')
+    p.className = 'notif-empty'
+    p.textContent = 'No tienes invitaciones a classrooms'
+    panel.appendChild(p)
+    return
+  }
+
+  const content = await buildNotificationsPanel()
+  const count = content.querySelectorAll('.notif-item').length
   badge.textContent = count > 9 ? '10+' : String(count)
   badge.style.display = count === 0 ? 'none' : 'inline-flex'
 
   panel.innerHTML = ''
-  const content = buildNotificationsPanel()
   panel.appendChild(content)
 }
 

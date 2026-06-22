@@ -3,7 +3,6 @@ from handlers.response_handlers import handle_error_client, handle_error_server,
 from models import SessionLocal
 from models.class_folder_model import ClassFolderModel
 from services.classroom_service import (
-    add_classroom_member_by_email,
     create_classroom,
     delete_classroom,
     get_all_classrooms,
@@ -13,6 +12,9 @@ from services.classroom_service import (
     is_user_in_classroom,
     update_classroom,
 )
+from services.user_service import get_user_by_email
+from services.classroom_invitation_service import create_invitation
+
 from validations.classroom_validation import (
     validate_classroom_data,
     validate_classroom_update_data,
@@ -199,15 +201,23 @@ def add_classroom_member_controller(classroom_id: int, request_data: dict):
     classroom = get_classroom_by_id(classroom_id)
     if classroom is None:
         return handle_error_client(404, "Classroom no encontrada.")
-
     try:
-        membership = add_classroom_member_by_email(classroom_id, correo)
-        return handle_success(201, "Usuario agregado correctamente.", {
-            "id": membership.id,
-            "classroom_id": membership.classroom_id,
-            "student_id": membership.student_id,
+        user = get_user_by_email(correo)
+        if user is None:
+            return handle_error_client(404, "El usuario especificado no existe.")
+
+        sender_id = getattr(g, "current_user", {}).get("id")
+        invitation = create_invitation(sender_id, {"classroom_id": classroom_id, "receiver_id": user.id})
+        return handle_success(201, "Invitación enviada correctamente.", {
+            "id": invitation.id,
+            "classroom_id": invitation.classroom_id,
+            "sender_id": invitation.sender_id,
+            "receiver_id": invitation.receiver_id,
+            "status": invitation.status.value,
+            "create_at": invitation.create_at.isoformat(),
+            "update_at": invitation.update_at.isoformat(),
         })
     except ValueError as error:
         return handle_error_client(400, str(error))
     except Exception:
-        return handle_error_server(500, "No se pudo agregar el usuario al classroom.")
+        return handle_error_server(500, "No se pudo enviar la invitación al classroom.")

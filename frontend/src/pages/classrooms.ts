@@ -311,13 +311,13 @@ async function showClassroomActions(classroom: Classroom, currentRole: string | 
 
         const result = await addClassroomMember(classroom.id, correo)
         if (!result.ok) {
-          alert(result.error || 'No se pudo agregar el usuario.')
+          alert(result.error || 'No se pudo enviar la invitación.')
           return
         }
         closeModal(addModal)
         closeModal(modal)
         await refreshClassrooms()
-        alert('Miembro agregado correctamente.')
+        alert('Invitación enviada correctamente.')
       })
     })
   }

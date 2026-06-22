@@ -7,6 +7,8 @@ from services.classroom_invitation_service import (
     get_invitation_by_id,
     respond_invitation,
 )
+from services.user_service import get_user_by_id
+from services.classroom_service import get_classroom_by_id
 from validations.classroom_invitation_validation import (
     validate_respond_invitation_data,
     validate_send_invitation_data,
@@ -49,6 +51,9 @@ def list_received_invitations_controller():
                 "status": invitation.status.value,
                 "create_at": invitation.create_at.isoformat(),
                 "update_at": invitation.update_at.isoformat(),
+                "sender_nombre": (get_user_by_id(invitation.sender_id).nombre if get_user_by_id(invitation.sender_id) else None),
+                "sender_apellido": (get_user_by_id(invitation.sender_id).apellido if get_user_by_id(invitation.sender_id) else None),
+                "classroom_name": (get_classroom_by_id(invitation.classroom_id).nombre if get_classroom_by_id(invitation.classroom_id) else None),
             }
             for invitation in invitations
         ]

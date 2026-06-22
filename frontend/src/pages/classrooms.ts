@@ -10,7 +10,7 @@ import {
   getUserClassrooms,
   updateClassroom,
 } from '../services/classroomService'
-import { deleteFile, getFilesByClassFolder, updateFile } from '../services/fileService'
+import { deleteFile, getFileRaw, getFilesByClassFolder, updateFile } from '../services/fileService'
 import type { Classroom, ClassroomMember, FileRecord } from '../types'
 
 function createModal(innerHtml: string, onClose: () => void): HTMLDivElement {
@@ -110,6 +110,7 @@ function renderFilesList(files: FileRecord[]) {
                 <span class="file-date">${new Date(file.upload_at).toLocaleDateString()}</span>
               </div>
               <div class="file-actions">
+                <button class="button small outline view-file-btn" data-file-id="${file.id}">Ver</button>
                 <button class="button small outline edit-file-btn" data-file-id="${file.id}">Editar</button>
                 <button class="button small danger delete-file-btn" data-file-id="${file.id}">Eliminar</button>
               </div>
@@ -166,6 +167,106 @@ async function showFilesModal(classroom: Classroom) {
   attachFileListeners(filesModal, classroom, files)
 }
 
+function getFileExtension(filename: string) {
+  const parts = filename.split('.')
+  return parts.length > 1 ? `.${parts.pop()}` : ''
+}
+
+function createFilePreview(file: FileRecord) {
+  const extension = getFileExtension(file.filename).toLowerCase()
+  const previewContainer = document.createElement('div')
+  previewContainer.className = 'file-preview'
+
+  const previewTitle = document.createElement('h3')
+  previewTitle.textContent = `Vista previa de ${file.filename}`
+  previewContainer.appendChild(previewTitle)
+
+  const previewContent = document.createElement('div')
+  previewContent.className = 'preview-content'
+
+  const linkButton = document.createElement('button')
+  linkButton.className = 'button outline small'
+  linkButton.textContent = 'Abrir en nueva pestaña'
+  linkButton.type = 'button'
+
+  if (['.jpg', '.jpeg', '.png'].includes(extension)) {
+    const img = document.createElement('img')
+    img.className = 'preview-image'
+    previewContent.appendChild(img)
+    previewContainer.appendChild(previewContent)
+    previewContainer.appendChild(linkButton)
+
+    getFileRaw(file.id).then((result) => {
+      if (!result.ok) {
+        const error = document.createElement('p')
+        error.textContent = result.error || 'No se pudo cargar la imagen.'
+        previewContent.appendChild(error)
+        return
+      }
+      const url = URL.createObjectURL(result.data!)
+      img.src = url
+      linkButton.addEventListener('click', () => window.open(url, '_blank'))
+    })
+  } else if (extension === '.pdf') {
+    const iframe = document.createElement('iframe')
+    iframe.className = 'preview-iframe'
+    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts')
+    previewContent.appendChild(iframe)
+    previewContainer.appendChild(previewContent)
+    previewContainer.appendChild(linkButton)
+
+    getFileRaw(file.id).then((result) => {
+      if (!result.ok) {
+        const error = document.createElement('p')
+        error.textContent = result.error || 'No se pudo cargar el PDF.'
+        previewContent.appendChild(error)
+        return
+      }
+      const url = URL.createObjectURL(result.data!)
+      iframe.src = url
+      linkButton.addEventListener('click', () => window.open(url, '_blank'))
+    })
+  } else if (extension === '.txt') {
+    const textarea = document.createElement('textarea')
+    textarea.className = 'preview-textarea'
+    textarea.readOnly = true
+    previewContent.appendChild(textarea)
+    previewContainer.appendChild(previewContent)
+    previewContainer.appendChild(linkButton)
+
+    getFileRaw(file.id).then((result) => {
+      if (!result.ok) {
+        const error = document.createElement('p')
+        error.textContent = result.error || 'No se pudo cargar el archivo de texto.'
+        previewContent.appendChild(error)
+        return
+      }
+      result.data?.text().then((text) => {
+        textarea.value = text
+      })
+      linkButton.addEventListener('click', async () => {
+        const url = URL.createObjectURL(result.data!)
+        window.open(url, '_blank')
+      })
+    })
+  } else {
+    const fallback = document.createElement('p')
+    fallback.textContent = 'No se puede previsualizar este tipo de archivo. Usa el botón para abrirlo.'
+    previewContent.appendChild(fallback)
+    previewContainer.appendChild(previewContent)
+    previewContainer.appendChild(linkButton)
+
+    linkButton.addEventListener('click', async () => {
+      const result = await getFileRaw(file.id)
+      if (!result.ok) return
+      const url = URL.createObjectURL(result.data!)
+      window.open(url, '_blank')
+    })
+  }
+
+  return previewContainer
+}
+
 function attachFileListeners(modal: HTMLDivElement, classroom: Classroom, files: FileRecord[]) {
   modal.querySelectorAll<HTMLButtonElement>('.edit-file-btn').forEach((btn) => {
     btn.addEventListener('click', async (event) => {
@@ -173,6 +274,7 @@ function attachFileListeners(modal: HTMLDivElement, classroom: Classroom, files:
       const fileItem = files.find((f) => f.id === fileId)
       if (!fileItem) return
 
+      const fileExtension = getFileExtension(fileItem.filename)
       const editFileModal = createModal(
         `
           <div class="modal-header">
@@ -181,22 +283,34 @@ function attachFileListeners(modal: HTMLDivElement, classroom: Classroom, files:
           <form id="edit-file-form" class="modal-form">
             <label>
               Nombre del archivo
-              <input name="filename" value="${fileItem.filename}" required />
+              <input name="filename" value="${fileItem.filename.replace(fileExtension, '')}" required />
             </label>
+            <p class="form-note">La extensión <strong>${fileExtension}</strong> no se puede cambiar.</p>
             <div class="modal-form-actions">
               <button class="button primary" type="submit">Guardar</button>
             </div>
           </form>
+          <div id="file-preview-container"></div>
         `,
         () => closeModal(editFileModal),
       )
 
       const form = editFileModal.querySelector<HTMLFormElement>('#edit-file-form')
+      const previewContainer = editFileModal.querySelector<HTMLDivElement>('#file-preview-container')
+      if (previewContainer) {
+        previewContainer.appendChild(createFilePreview(fileItem))
+      }
+
       form?.addEventListener('submit', async (submitEvent) => {
         submitEvent.preventDefault()
         const formData = new FormData(form)
-        const filename = formData.get('filename')?.toString().trim() || ''
-        if (!filename) return
+        let rawName = formData.get('filename')?.toString().trim() || ''
+        if (!rawName) return
+
+        rawName = rawName.replace(/\.[^.]+$/, '')
+
+        const fileExtension = getFileExtension(fileItem.filename)
+        const filename = `${rawName}${fileExtension}`
 
         const result = await updateFile(fileId, { filename })
         if (!result.ok) {
@@ -207,6 +321,29 @@ function attachFileListeners(modal: HTMLDivElement, classroom: Classroom, files:
         closeModal(modal)
         await showFilesModal(classroom)
       })
+    })
+  })
+
+  modal.querySelectorAll<HTMLButtonElement>('.view-file-btn').forEach((btn) => {
+    btn.addEventListener('click', async (event) => {
+      const fileId = parseInt((event.target as HTMLButtonElement).dataset.fileId || '0')
+      const fileItem = files.find((f) => f.id === fileId)
+      if (!fileItem) return
+
+      const previewModal = createModal(
+        `
+          <div class="modal-header">
+            <h2>Vista previa de ${fileItem.filename}</h2>
+          </div>
+          <div class="modal-content" id="preview-modal-content"></div>
+        `,
+        () => closeModal(previewModal),
+      )
+
+      const previewModalContent = previewModal.querySelector<HTMLDivElement>('#preview-modal-content')
+      if (previewModalContent) {
+        previewModalContent.appendChild(createFilePreview(fileItem))
+      }
     })
   })
 

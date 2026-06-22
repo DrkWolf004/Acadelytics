@@ -67,6 +67,32 @@ export async function uploadFile(
   })
 }
 
+export async function getFileRaw(fileId: number): Promise<{ ok: boolean; data?: Blob; error?: string }> {
+  const token = getAuthToken()
+  if (!token) {
+    return { ok: false, error: 'No autorizado' }
+  }
+
+  const url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/files/${fileId}/raw`
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      const body = await response.json()
+      return { ok: false, error: body.message || 'No se pudo obtener el archivo.' }
+    }
+    return { ok: false, error: 'No se pudo obtener el archivo.' }
+  }
+
+  const blob = await response.blob()
+  return { ok: true, data: blob }
+}
+
 export async function updateFile(fileId: number, payload: { filename?: string }): Promise<{ ok: boolean; data?: FileRecord; error?: string }> {
   return putAuth(`/files/${fileId}`, payload)
 }

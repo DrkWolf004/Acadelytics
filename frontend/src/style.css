@@ -487,6 +487,58 @@ a {
   justify-content: flex-end;
 }
 
+.form-note {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.file-preview {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-strong);
+}
+
+.file-preview h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+.preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+.preview-iframe {
+  width: 100%;
+  min-height: 520px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.preview-textarea {
+  width: 100%;
+  min-height: 320px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;

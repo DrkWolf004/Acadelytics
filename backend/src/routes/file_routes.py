@@ -1,4 +1,7 @@
-from flask import Blueprint, request
+import mimetypes
+import os
+
+from flask import Blueprint, request, send_file
 
 from controllers.file_controller import (
     create_file_controller,
@@ -8,6 +11,7 @@ from controllers.file_controller import (
     get_files_controller,
     upload_file_controller,
 )
+from services.file_service import get_file_by_id
 from middlewares.authentication import authenticate_jwt
 
 file_blueprint = Blueprint("file_blueprint", __name__)
@@ -41,6 +45,19 @@ def get_files_route():
 @authenticate_jwt
 def get_file_by_id_route(file_id: int):
     return get_file_by_id_controller(file_id)
+
+
+@file_blueprint.route("/<int:file_id>/raw", methods=["GET"])
+@authenticate_jwt
+def get_file_raw_route(file_id: int):
+    file_record = get_file_by_id(file_id)
+    if file_record is None:
+        return {"status": "error", "message": "File no encontrado.", "code": 404}, 404
+    if not os.path.exists(file_record.filepath):
+        return {"status": "error", "message": "Archivo no encontrado.", "code": 404}, 404
+
+    mimetype, _ = mimetypes.guess_type(file_record.filename)
+    return send_file(file_record.filepath, mimetype=mimetype or "application/octet-stream", as_attachment=False)
 
 
 @file_blueprint.route("/<int:file_id>", methods=["PUT"])

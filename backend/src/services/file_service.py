@@ -152,7 +152,12 @@ def update_file(file_id: int, payload: dict) -> FileModel | None:
             file_record.class_folder_id = payload["class_folder_id"]
 
         if "filename" in payload:
-            file_record.filename = payload["filename"].strip()
+            raw_filename = payload["filename"].strip()
+            base_name = os.path.splitext(raw_filename)[0].strip()
+            if not base_name:
+                raise ValueError("El nombre del archivo no puede estar vacío.")
+            original_ext = os.path.splitext(file_record.filename)[1]
+            file_record.filename = f"{base_name}{original_ext}"
         if "secure_name" in payload:
             file_record.secure_name = payload["secure_name"].strip()
         if "filepath" in payload:

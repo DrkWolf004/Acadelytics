@@ -56,9 +56,14 @@ def validate_file_update_data(payload: dict) -> tuple[bool, dict]:
             errors["class_folder_id"] = class_folder_id_error
 
     if "filename" in payload:
-        filename_error = _validate_filename("filename", payload.get("filename"), required=False)
-        if filename_error:
-            errors["filename"] = filename_error
+        filename = payload.get("filename")
+        if filename is None or not isinstance(filename, str) or not filename.strip():
+            errors["filename"] = "El campo filename no puede estar vacío."
+        else:
+            extension = os.path.splitext(filename)[1].lower()
+            if extension and extension not in ALLOWED_FILE_EXTENSIONS:
+                allowed = ", ".join(sorted(ALLOWED_FILE_EXTENSIONS))
+                errors["filename"] = f"El archivo debe tener una extensión válida: {allowed}."
 
     if "secure_name" in payload:
         secure_name_error = _validate_string("secure_name", payload.get("secure_name"), required=False)

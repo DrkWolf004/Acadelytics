@@ -132,7 +132,16 @@ def edit_user_controller(user_id: int, request_data: dict, current_user: dict):
         if user is None:
             return handle_error_client(404, "Usuario no encontrado.")
 
-        return handle_success(200, "Usuario actualizado correctamente.", _build_user_payload(user))
+        response_payload = _build_user_payload(user)
+        current_user_id = current_user.get("id")
+        if current_user_id is not None and str(current_user_id) == str(user.id):
+            response_payload["token"] = create_access_token({
+                "id": user.id,
+                "correo": user.correo,
+                "rol": user.rol.value,
+            })
+
+        return handle_success(200, "Usuario actualizado correctamente.", response_payload)
     except ValueError as error:
         return handle_error_client(400, str(error))
     except Exception:

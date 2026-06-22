@@ -5,6 +5,12 @@ from flask import g
 from handlers.response_handlers import handle_error_client
 
 
+def _normalize_role(value):
+    if value is None:
+        return ""
+    return str(value).strip().capitalize()
+
+
 def _require_role(required_role):
     def decorator(func):
         @wraps(func)
@@ -17,7 +23,7 @@ def _require_role(required_role):
                     {"info": "Usuario no autenticado."},
                 )
 
-            rol = user.get("rol")
+            rol = _normalize_role(user.get("rol"))
             if rol != required_role:
                 return handle_error_client(
                     403,
@@ -41,6 +47,7 @@ def is_profesor(func):
 
 
 def is_profesor_or_admin(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         user = getattr(g, "current_user", None)
         if user is None:
@@ -50,7 +57,7 @@ def is_profesor_or_admin(func):
                 {"info": "Usuario no autenticado."},
             )
 
-        rol = user.get("rol")
+        rol = _normalize_role(user.get("rol"))
         if rol not in ("Profesor", "Admin"):
             return handle_error_client(
                 403,

@@ -4,6 +4,12 @@ NAME_PATTERN = re.compile(r"^[0-9a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$")
 ALLOWED_CLASSROOM_TYPES = {"Solitario", "Grupal"}
 
 
+def _normalize_role(value: str | None) -> str:
+    if value is None:
+        return ""
+    return value.strip().capitalize()
+
+
 def _validate_id(field: str, value: int, required: bool = True) -> str | None:
     if value is None:
         return f"El campo {field} es obligatorio." if required else None
@@ -38,6 +44,7 @@ def _validate_type(value: str, required: bool = True) -> str | None:
 
 def validate_classroom_data(payload: dict, current_role: str | None = None) -> tuple[bool, dict]:
     errors: dict = {}
+    normalized_role = _normalize_role(current_role)
 
     nombre_error = _validate_nombre("nombre", payload.get("nombre"), required=True)
     if nombre_error:
@@ -47,7 +54,7 @@ def validate_classroom_data(payload: dict, current_role: str | None = None) -> t
         type_error = _validate_type(payload.get("type"), required=False)
         if type_error:
             errors["type"] = type_error
-        elif payload.get("type") == "Grupal" and current_role not in {"Profesor", "Admin"}:
+        elif payload.get("type") == "Grupal" and normalized_role not in {"Profesor", "Admin"}:
             errors["type"] = "Solo los roles Profesor o Admin pueden establecer el classroom como Grupal."
 
     return (len(errors) == 0, errors)
@@ -55,6 +62,7 @@ def validate_classroom_data(payload: dict, current_role: str | None = None) -> t
 
 def validate_classroom_update_data(payload: dict, current_role: str | None = None) -> tuple[bool, dict]:
     errors: dict = {}
+    normalized_role = _normalize_role(current_role)
 
     if "nombre" in payload:
         nombre_error = _validate_nombre("nombre", payload.get("nombre"), required=False)
@@ -65,7 +73,7 @@ def validate_classroom_update_data(payload: dict, current_role: str | None = Non
         type_error = _validate_type(payload.get("type"), required=False)
         if type_error:
             errors["type"] = type_error
-        elif payload.get("type") == "Grupal" and current_role not in {"Profesor", "Admin"}:
+        elif payload.get("type") == "Grupal" and normalized_role not in {"Profesor", "Admin"}:
             errors["type"] = "Solo los roles Profesor o Admin pueden establecer el classroom como Grupal."
 
     return (len(errors) == 0, errors)

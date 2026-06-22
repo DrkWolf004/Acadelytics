@@ -1,6 +1,5 @@
 FROM python:3.12-slim
 
-# Instalar netcat para verificar conectividad a PostgreSQL
 RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

@@ -148,15 +148,24 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
         error.textContent = result.error || 'No se pudo actualizar el perfil.'
         return
       }
-      const updatedUser = result.data as User
-      setAuthStorage(token, {
+      const updatedUser = result.data as User & { token?: string }
+      const authToken = updatedUser.token || token
+
+      if (!updatedUser.token && updatedUser.rol !== userData.rol) {
+        clearAuthStorage()
+        alert('El rol cambió y la sesión debe renovarse. Inicia sesión nuevamente.')
+        window.location.hash = '#/login'
+        return
+      }
+
+      setAuthStorage(authToken, {
         id: updatedUser.id,
         nombre: updatedUser.nombre,
         apellido: updatedUser.apellido,
         correo: updatedUser.correo,
         rol: updatedUser.rol,
         role_changes_remaining: updatedUser.role_changes_remaining,
-        token,
+        token: authToken,
       } as AuthResponse)
       message.textContent = 'Perfil actualizado correctamente.'
       renderProfilePage(root)

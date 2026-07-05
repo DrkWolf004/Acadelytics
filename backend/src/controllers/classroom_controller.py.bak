@@ -30,7 +30,7 @@ def create_classroom_controller(request_data: dict):
 
     try:
         classroom = create_classroom(request_data, creator_id=current_user.get("id"))
-
+        
         session = SessionLocal()
         try:
             folder = session.query(ClassFolderModel).filter(
@@ -39,7 +39,7 @@ def create_classroom_controller(request_data: dict):
             folder_id = folder.id if folder else None
         finally:
             session.close()
-
+        
         return handle_success(201, "Classroom creada correctamente.", {
             "id": classroom.id,
             "nombre": classroom.nombre,

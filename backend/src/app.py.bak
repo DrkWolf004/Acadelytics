@@ -37,7 +37,7 @@ def main():
         create_initial_users()
     except Exception as e:
         print(f"Advertencia inicial: {e}")
-
+    
     app.run(host=HOST or '0.0.0.0', port=int(PORT or 5000), debug=False)
 
 

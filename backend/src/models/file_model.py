@@ -11,12 +11,14 @@ class FileModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     class_folder_id = Column(Integer, ForeignKey("class_folders.id", ondelete="CASCADE"), nullable=False, index=True)
+    uploaded_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     filename = Column(String(255), nullable=False)
     secure_name = Column(String(255), nullable=False)
     filepath = Column(String(1024), nullable=False)
     upload_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     class_folder = relationship("ClassFolderModel", back_populates="files")
+    uploader = relationship("UserModel")
 
     def __repr__(self) -> str:
         return f"<FileModel id={self.id} filename={self.filename} class_folder_id={self.class_folder_id}>"

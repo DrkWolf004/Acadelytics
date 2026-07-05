@@ -11,14 +11,22 @@ def authenticate_jwt(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         authorization = request.headers.get("Authorization", "")
-        if not authorization.startswith("Bearer "):
+        token = None
+
+        if authorization.startswith("Bearer "):
+            token = authorization.split(" ", 1)[1].strip()
+        elif request.is_json and isinstance(request.json, dict):
+            token = request.json.get("token") or request.json.get("access_token")
+        elif request.args.get("token"):
+            token = request.args.get("token")
+
+        if not token:
             return handle_error_client(
                 401,
                 "No tienes permiso para acceder a este recurso",
                 {"info": "Token de autorización no proporcionado."},
             )
 
-        token = authorization.split(" ", 1)[1]
         if not ACCESS_TOKEN_SECRET:
             return handle_error_server(500, "No se ha configurado el secreto de token.")
 

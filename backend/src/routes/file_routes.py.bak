@@ -25,7 +25,7 @@ def upload_file_route(class_folder_id: int):
     """Upload a file to a specific class folder."""
     if "file" not in request.files:
         return {"status": "error", "message": "No file part provided", "code": 400}, 400
-
+    
     file = request.files["file"]
     return upload_file_controller(class_folder_id, file)
 
@@ -60,18 +60,18 @@ def get_file_raw_route(file_id: int):
         mimetype, _ = mimetypes.guess_type(file_record.filename)
         return send_file(requested_path, mimetype=mimetype or "application/octet-stream", as_attachment=False)
 
-
+    # Try alternative path based on uploads folder structure and secure_name
     uploads_root = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
     alt_path = None
     secure_name = getattr(file_record, "secure_name", None)
     class_folder_id = getattr(file_record, "class_folder_id", None)
 
-
+    # Candidate roots to try (project-relative and common container paths)
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     candidate_roots = [uploads_root, os.path.join(project_root, 'uploads'), '/app/uploads', '/usr/src/app/uploads', os.getcwd()]
 
     try:
-
+        # First try the structured path uploads/<class_folder_id>/<secure_name>
         if class_folder_id is not None and secure_name:
             for root in candidate_roots:
                 candidate = os.path.join(root, str(class_folder_id), secure_name)
@@ -80,7 +80,7 @@ def get_file_raw_route(file_id: int):
                     logger.info("Serving file id=%s from candidate structured path=%s", file_id, candidate)
                     return send_file(candidate, mimetype=mimetype or "application/octet-stream", as_attachment=False)
 
-
+        # If not found, do a limited search for the secure_name under candidate_roots
         if secure_name:
             searched = 0
             for root in candidate_roots:
@@ -100,7 +100,7 @@ def get_file_raw_route(file_id: int):
     except Exception:
         logger.exception("Error while searching for alternative file path for file id %s", file_id)
 
-
+    # Log debug info for easier diagnosis
     logger.warning("File raw not found for id=%s. saved_path=%s secure_name=%s tried_roots=%s", file_id, requested_path, secure_name, candidate_roots)
     return {"status": "error", "message": "Archivo no encontrado.", "code": 404}, 404
 

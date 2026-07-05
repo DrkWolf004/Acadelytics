@@ -215,7 +215,7 @@ function createFilePreview(file: FileRecord) {
   } else if (extension === '.pdf') {
     const iframe = document.createElement('iframe')
     iframe.className = 'preview-iframe'
-
+    // Avoid allowing scripts inside iframe to prevent sandbox escape warnings
     iframe.setAttribute('sandbox', 'allow-same-origin')
     previewContent.appendChild(iframe)
     previewContainer.appendChild(previewContent)

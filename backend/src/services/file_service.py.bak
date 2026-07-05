@@ -21,25 +21,25 @@ def ensure_uploads_dir_exists(class_folder_id: int) -> str:
 def save_uploaded_file(file_obj, class_folder_id: int) -> tuple[str, str]:
     """
     Save uploaded file to disk and return (secure_name, filepath).
-
+    
     Returns:
         tuple: (secure_filename, full_filepath)
     """
     if not hasattr(file_obj, 'filename'):
         raise ValueError("Invalid file object")
-
+    
     original_filename = secure_filename(file_obj.filename)
     if not original_filename:
         raise ValueError("Invalid filename")
-
+    
     name_parts = os.path.splitext(original_filename)
     secure_name = f"{uuid.uuid4().hex}_{name_parts[0]}{name_parts[1]}"
-
+    
     folder_path = ensure_uploads_dir_exists(class_folder_id)
-
+    
     filepath = os.path.join(folder_path, secure_name)
     file_obj.save(filepath)
-
+    
     return secure_name, filepath
 
 
@@ -107,9 +107,9 @@ def create_file_from_upload(class_folder_id: int, file_obj, uploaded_by_id: int 
         class_folder = session.query(ClassFolderModel).filter(ClassFolderModel.id == class_folder_id).first()
         if class_folder is None:
             raise ValueError("El class folder especificado no existe.")
-
+        
         secure_name, filepath = save_uploaded_file(file_obj, class_folder_id)
-
+        
         file_record = FileModel(
             class_folder_id=class_folder_id,
             uploaded_by_id=uploaded_by_id,

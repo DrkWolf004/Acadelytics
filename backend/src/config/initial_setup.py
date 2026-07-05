@@ -1,5 +1,7 @@
 import os
 
+from sqlalchemy import text
+
 from models import SessionLocal, UserModel, UserRole
 
 
@@ -8,6 +10,20 @@ def create_uploads_folder():
     uploads_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
     os.makedirs(uploads_dir, exist_ok=True)
     print(f"=> Carpeta de uploads disponible en: {uploads_dir}")
+
+
+def ensure_file_uploaded_by_column_exists():
+    """Add the uploaded_by_id column to existing files tables when needed."""
+    session = SessionLocal()
+    try:
+        session.execute(text("ALTER TABLE files ADD COLUMN IF NOT EXISTS uploaded_by_id INTEGER"))
+        session.commit()
+        print("=> Columna uploaded_by_id verificada en la tabla files")
+    except Exception as error:
+        session.rollback()
+        print(f"Error al verificar la columna uploaded_by_id: {error}")
+    finally:
+        session.close()
 
 
 def create_initial_users():

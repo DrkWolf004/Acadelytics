@@ -55,6 +55,10 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
               </select>
             `}
           </label>
+          <label id="validation-file-wrapper">
+            Documento de validación para profesor
+            <input type="file" name="validationFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+          </label>
           <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:12px;">
             <button id="delete-account" type="button" class="button danger outline">Eliminar cuenta</button>
           </div>
@@ -82,6 +86,7 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
       <a href="#/classrooms" data-router class="nav-link">Classrooms</a>
       <a href="#/profile" data-router class="nav-link">Perfil</a>
       ${userData.rol === 'Admin' ? '<a href="#/admin/users" data-router class="nav-link">Usuarios</a>' : ''}
+      ${userData.rol === 'Admin' ? '<a href="#/admin/professor-validations" data-router class="nav-link">Solicitudes</a>' : ''}
     `
   }
 
@@ -124,17 +129,21 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
     message.textContent = ''
 
     const formData = new FormData(form)
+    const selectedRole = formData.get('rol')?.toString().trim() || userData.rol
     const payload: UserPayload = {
       nombre: formData.get('nombre')?.toString().trim() || '',
       apellido: formData.get('apellido')?.toString().trim() || '',
       correo: formData.get('correo')?.toString().trim() || '',
-      rol: formData.get('rol')?.toString().trim() || userData.rol,
+      rol: userData.rol,
     }
-
-    const selectedRole = payload.rol
-    if (selectedRole !== userData.rol && userData.role_changes_remaining <= 0) {
+    const isRequestingProfessor = selectedRole === 'Profesor' && userData.rol !== 'Profesor'
+    if (selectedRole !== userData.rol && userData.role_changes_remaining <= 0 && !isRequestingProfessor) {
       error.textContent = 'No quedan cambios de rol disponibles.'
       return
+    }
+
+    if (!isRequestingProfessor) {
+      payload.rol = selectedRole
     }
 
     const newPassword = formData.get('newPassword')?.toString().trim() || ''
@@ -148,6 +157,20 @@ function renderProfileForm(root: HTMLElement, userData: User, token: string) {
         error.textContent = result.error || 'No se pudo actualizar el perfil.'
         return
       }
+
+      if (isRequestingProfessor) {
+        const validationFile = formData.get('validationFile') as File | null
+        if (!validationFile || !validationFile.name) {
+          error.textContent = 'Sube un archivo para solicitar el rol de profesor.'
+          return
+        }
+        const validationResult = await (await import('../services/professorValidationService')).submitProfessorValidation(validationFile)
+        if (!validationResult.ok) {
+          error.textContent = validationResult.error || 'No se pudo enviar la solicitud de validación.'
+          return
+        }
+      }
+
       const updatedUser = result.data as User & { token?: string }
       const authToken = updatedUser.token || token
 

@@ -303,6 +303,7 @@ export async function renderAdminPage(root: HTMLElement) {
       <a href="#/classrooms" data-router class="nav-link">Classrooms</a>
       <a href="#/profile" data-router class="nav-link">Perfil</a>
       <a href="#/admin/users" data-router class="nav-link">Usuarios</a>
+      <a href="#/admin/professor-validations" data-router class="nav-link">Solicitudes</a>
     `
   }
 

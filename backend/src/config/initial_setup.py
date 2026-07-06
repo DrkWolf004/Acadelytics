@@ -3,6 +3,7 @@ import os
 from sqlalchemy import text
 
 from models import SessionLocal, UserModel, UserRole
+from models.professor_validation_model import ProfessorValidationRequestModel
 
 
 def create_uploads_folder():

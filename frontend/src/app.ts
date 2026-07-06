@@ -5,6 +5,7 @@ import { renderRegisterPage } from './pages/register'
 import { renderProfilePage } from './pages/profile'
 import { renderAdminPage } from './pages/admin'
 import { renderClassroomsPage } from './pages/classrooms'
+import { renderProfessorValidationPage } from './pages/professorValidation'
 import { getTheme, setTheme, /*getNotifications,*/ getAuthUser } from './hooks/useLocalStorage'
 import { getReceivedInvitations, respondInvitation } from './services/invitationService'
 
@@ -19,10 +20,11 @@ const routes: Record<string, () => void | Promise<void>> = {
   '#/classrooms': () => renderClassroomsPage(root),
   '#/profile': () => renderProfilePage(root),
   '#/admin/users': () => renderAdminPage(root),
+  '#/admin/professor-validations': () => renderProfessorValidationPage(root),
 }
 
 function isProtectedRoute(hash: string) {
-  return ['#/dashboard', '#/classrooms', '#/profile', '#/admin/users'].includes(hash)
+  return ['#/dashboard', '#/classrooms', '#/profile', '#/admin/users', '#/admin/professor-validations'].includes(hash)
 }
 
 function renderCurrentRoute() {

@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from models import SessionLocal
+from models.professor_validation_model import ProfessorValidationRequestModel
 from models.user_model import UserModel, UserRole
 
 
@@ -90,9 +91,15 @@ def delete_user(user_id: int) -> bool:
         if user is None:
             return False
 
+        session.query(ProfessorValidationRequestModel).filter(
+            ProfessorValidationRequestModel.user_id == user_id
+        ).delete(synchronize_session=False)
         session.delete(user)
         session.commit()
         return True
+    except IntegrityError:
+        session.rollback()
+        raise ValueError("No se pudo eliminar el usuario porque tiene datos asociados.")
     finally:
         session.close()
 

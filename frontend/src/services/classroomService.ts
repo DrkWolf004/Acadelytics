@@ -9,8 +9,15 @@ export async function getClassroomMembers(classroomId: number): Promise<{ ok: bo
   return getAuth<ClassroomMember[]>(`/classrooms/${classroomId}/members`)
 }
 
-export async function addClassroomMember(classroomId: number, correo: string): Promise<{ ok: boolean; data?: { id: number; classroom_id: number; student_id: number }; error?: string }> {
-  return postAuth(`/classrooms/${classroomId}/members`, { correo })
+export async function addClassroomMember(
+  classroomId: number,
+  correos: string | string[],
+): Promise<{ ok: boolean; data?: { id: number; classroom_id: number; student_id: number }; error?: string }> {
+  const payload = Array.isArray(correos)
+    ? { correos }
+    : { correo: correos }
+
+  return postAuth(`/classrooms/${classroomId}/members`, payload)
 }
 
 export async function createClassroom(payload: { nombre: string; type: string }): Promise<{ ok: boolean; data?: Classroom; error?: string }> {

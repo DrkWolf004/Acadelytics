@@ -434,9 +434,13 @@ async function showClassroomActions(classroom: Classroom, currentRole: string | 
           </div>
           <form id="add-member-form" class="modal-form">
             <label>
-              Correo del alumno
-              <input type="email" name="correo" required />
+              Correo del usuario
+              <textarea name="correos" rows="4" placeholder="ejemplo@correo.com, otro@correo.com" required></textarea>
             </label>
+            <p class="form-note">
+              Puedes invitar a uno o varios usuarios. Si el destinatario es un estudiante, se agrega directamente al classroom. Si es profesor, recibirá una invitación para aceptar o rechazar.
+            </p>
+            <p class="form-note">Separa los correos con comas, punto y coma o saltos de línea.</p>
             <div class="modal-form-actions">
               <button class="button primary" type="submit">Agregar</button>
             </div>
@@ -449,18 +453,23 @@ async function showClassroomActions(classroom: Classroom, currentRole: string | 
       form?.addEventListener('submit', async (event) => {
         event.preventDefault()
         const formData = new FormData(form)
-        const correo = formData.get('correo')?.toString().trim() || ''
-        if (!correo) return
+        const rawValue = formData.get('correos')?.toString().trim() || ''
+        const correos = rawValue
+          .split(/[\n,;]+/)
+          .map((value) => value.trim())
+          .filter(Boolean)
 
-        const result = await addClassroomMember(classroom.id, correo)
+        if (correos.length === 0) return
+
+        const result = await addClassroomMember(classroom.id, correos)
         if (!result.ok) {
-          alert(result.error || 'No se pudo enviar la invitación.')
+          alert(result.error || 'No se pudo procesar la invitación.')
           return
         }
         closeModal(addModal)
         closeModal(modal)
         await refreshClassrooms()
-        alert('Invitación enviada correctamente.')
+        alert('Operación completada correctamente.')
       })
     })
   }

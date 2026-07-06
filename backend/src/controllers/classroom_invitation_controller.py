@@ -2,9 +2,9 @@ from flask import g
 
 from handlers.response_handlers import handle_error_client, handle_error_server, handle_success
 from services.classroom_invitation_service import (
-    create_invitation,
     get_pending_invitations_for_receiver,
     get_invitation_by_id,
+    invite_or_add_member,
     respond_invitation,
 )
 from services.user_service import get_user_by_id
@@ -22,8 +22,15 @@ def send_invitation_controller(request_data: dict):
 
     sender_id = getattr(g, "current_user", {}).get("id")
     try:
-        invitation = create_invitation(sender_id, request_data)
+        result = invite_or_add_member(sender_id, request_data)
+        if result["action"] == "added":
+            return handle_success(201, "Usuario agregado directamente al classroom.", {
+                "action": "added",
+            })
+
+        invitation = result["invitation"]
         return handle_success(201, "Invitación enviada correctamente.", {
+            "action": "invitation",
             "id": invitation.id,
             "classroom_id": invitation.classroom_id,
             "sender_id": invitation.sender_id,

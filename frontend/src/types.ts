@@ -62,6 +62,7 @@ export type ClassroomMember = {
 export type FileRecord = {
   id: number
   class_folder_id: number
+  uploaded_by_id?: number | null
   filename: string
   secure_name: string
   filepath: string

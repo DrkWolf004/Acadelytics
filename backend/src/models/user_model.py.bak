@@ -57,9 +57,9 @@ class UserModel(Base):
         return f"<UserModel id={self.id} correo={self.correo} rol={self.rol.value}>"
 
     def set_password(self, raw_password: str) -> None:
-
+        
         self.password = generate_password_hash(raw_password)
 
     def verify_password(self, raw_password: str) -> bool:
-
+        
         return check_password_hash(self.password, raw_password)

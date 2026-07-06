@@ -13,6 +13,6 @@ HOST = os.getenv('HOST', '0.0.0.0')
 DB_USERNAME = os.getenv('DB_USERNAME') or os.getenv('DB_USER', 'postgres')
 PASSWORD = os.getenv('PASSWORD') or os.getenv('DB_PASSWORD', 'postgres')
 DATABASE = os.getenv('DATABASE') or os.getenv('DB_NAME', 'acadelytics')
-ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET', 'supersecret')
+ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET') or os.getenv('JWT_SECRET') or 'supersecret_jwt_key'
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 cookieKey = os.getenv('cookieKey') or os.getenv('COOKIE_KEY', 'supersecret_cookie')

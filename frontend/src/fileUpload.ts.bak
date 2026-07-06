@@ -15,9 +15,9 @@ export async function createFileUploadUI(
 
   container.innerHTML = `
     <div style="margin-bottom: 16px;">
-      <input
-        type="file"
-        id="${inputId}"
+      <input 
+        type="file" 
+        id="${inputId}" 
         accept="${ALLOWED_EXTENSIONS.join(',')}"
         style="display: none;"
       />
@@ -74,7 +74,7 @@ export async function createFileUploadUI(
           ">
             <div id="${progressId}-bar" style="
               height: 100%;
-              background: linear-gradient(90deg, var(--accent),
+              background: linear-gradient(90deg, var(--accent), #60a5fa);
               width: 0%;
               transition: width 0.3s ease;
               border-radius: 3px;
@@ -107,7 +107,7 @@ export async function createFileUploadUI(
               background: rgba(34, 197, 94, 0.1);
               border: 1px solid rgba(34, 197, 94, 0.3);
               border-radius: 8px;
-              color:
+              color: #22c55e;
               font-weight: 500;
             ">
               <span>✓</span>
@@ -152,7 +152,7 @@ function showUploadError(
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
     border-radius: 8px;
-    color:
+    color: #ef4444;
     font-weight: 500;
     display: flex;
     align-items: center;

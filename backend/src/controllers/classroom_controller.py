@@ -13,7 +13,7 @@ from services.classroom_service import (
     update_classroom,
 )
 from services.user_service import get_user_by_email
-from services.classroom_invitation_service import create_invitation
+from services.classroom_invitation_service import invite_or_add_member
 
 from validations.classroom_validation import (
     validate_classroom_data,
@@ -194,30 +194,65 @@ def get_classroom_members_controller(classroom_id: int):
 
 
 def add_classroom_member_controller(classroom_id: int, request_data: dict):
-    correo = request_data.get("correo")
-    if not isinstance(correo, str) or not correo.strip():
-        return handle_error_client(400, "Validación fallida.", {"correo": "El correo es obligatorio."})
+    raw_emails = request_data.get("correos") if "correos" in request_data else request_data.get("correo")
+
+    if isinstance(raw_emails, str):
+        emails = [raw_emails.strip().lower()]
+    elif isinstance(raw_emails, list):
+        emails = [item.strip().lower() for item in raw_emails if isinstance(item, str) and item.strip()]
+    else:
+        return handle_error_client(400, "Validación fallida.", {"correo": "Debes enviar uno o varios correos válidos."})
+
+    if not emails:
+        return handle_error_client(400, "Validación fallida.", {"correo": "Debes enviar uno o varios correos válidos."})
 
     classroom = get_classroom_by_id(classroom_id)
     if classroom is None:
         return handle_error_client(404, "Classroom no encontrada.")
-    try:
-        user = get_user_by_email(correo)
-        if user is None:
-            return handle_error_client(404, "El usuario especificado no existe.")
 
+    try:
         sender_id = getattr(g, "current_user", {}).get("id")
-        invitation = create_invitation(sender_id, {"classroom_id": classroom_id, "receiver_id": user.id})
-        return handle_success(201, "Invitación enviada correctamente.", {
-            "id": invitation.id,
-            "classroom_id": invitation.classroom_id,
-            "sender_id": invitation.sender_id,
-            "receiver_id": invitation.receiver_id,
-            "status": invitation.status.value,
-            "create_at": invitation.create_at.isoformat(),
-            "update_at": invitation.update_at.isoformat(),
+        results = []
+        added_count = 0
+        invited_count = 0
+
+        for correo in emails:
+            user = get_user_by_email(correo)
+            if user is None:
+                return handle_error_client(404, f"El usuario con correo {correo} no existe.")
+
+            result = invite_or_add_member(sender_id, {"classroom_id": classroom_id, "receiver_id": user.id})
+            if result["action"] == "added":
+                added_count += 1
+                results.append({"correo": correo, "action": "added"})
+            else:
+                invitation = result["invitation"]
+                invited_count += 1
+                results.append({
+                    "correo": correo,
+                    "action": "invitation",
+                    "id": invitation.id,
+                    "classroom_id": invitation.classroom_id,
+                    "sender_id": invitation.sender_id,
+                    "receiver_id": invitation.receiver_id,
+                    "status": invitation.status.value,
+                    "create_at": invitation.create_at.isoformat(),
+                    "update_at": invitation.update_at.isoformat(),
+                })
+
+        if added_count > 0 and invited_count == 0:
+            message = "Usuarios agregados directamente al classroom."
+        elif invited_count > 0 and added_count == 0:
+            message = "Invitaciones enviadas correctamente."
+        else:
+            message = "Procesamiento de invitaciones completado."
+
+        return handle_success(201, message, {
+            "added_count": added_count,
+            "invited_count": invited_count,
+            "results": results,
         })
     except ValueError as error:
         return handle_error_client(400, str(error))
     except Exception:
-        return handle_error_server(500, "No se pudo enviar la invitación al classroom.")
+        return handle_error_server(500, "No se pudo procesar la invitación al classroom.")

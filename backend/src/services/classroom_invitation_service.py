@@ -8,7 +8,65 @@ from models import SessionLocal
 from models.classroom_invitation_model import ClassroomInvitationModel, InvitationStatus
 from models.classroom_model import ClassroomModel
 from models.classroom_student_model import ClassroomStudentModel
+from models.user_model import UserRole
 from services.user_service import get_user_by_id
+
+
+def invite_or_add_member(sender_id: int, payload: dict) -> dict:
+    session = SessionLocal()
+    try:
+        classroom = session.query(ClassroomModel).filter(ClassroomModel.id == payload["classroom_id"]).first()
+        if classroom is None:
+            raise ValueError("El classroom especificado no existe.")
+
+        receiver = get_user_by_id(payload["receiver_id"])
+        if receiver is None:
+            raise ValueError("El usuario invitado no existe.")
+
+        existing_membership = session.query(ClassroomStudentModel).filter(
+            ClassroomStudentModel.classroom_id == payload["classroom_id"],
+            ClassroomStudentModel.student_id == payload["receiver_id"],
+        ).first()
+        if existing_membership is not None:
+            raise ValueError("El usuario ya pertenece a este classroom.")
+
+        existing_invitation = (
+            session.query(ClassroomInvitationModel)
+            .filter(
+                ClassroomInvitationModel.classroom_id == payload["classroom_id"],
+                ClassroomInvitationModel.receiver_id == payload["receiver_id"],
+                ClassroomInvitationModel.status == InvitationStatus.pendiente,
+            )
+            .first()
+        )
+        if existing_invitation is not None:
+            raise ValueError("Ya existe una invitación pendiente para este usuario.")
+
+        if receiver.rol == UserRole.Alumno:
+            membership = create_classroom_student(classroom.id, receiver.id)
+            return {
+                "action": "added",
+                "membership": membership,
+            }
+
+        invitation = ClassroomInvitationModel(
+            classroom_id=payload["classroom_id"],
+            sender_id=sender_id,
+            receiver_id=payload["receiver_id"],
+            status=InvitationStatus.pendiente,
+        )
+        session.add(invitation)
+        session.commit()
+        session.refresh(invitation)
+        return {
+            "action": "invitation",
+            "invitation": invitation,
+        }
+    except IntegrityError:
+        session.rollback()
+        raise ValueError("No se pudo crear la invitación. Verifique los datos.")
+    finally:
+        session.close()
 
 
 def create_invitation(sender_id: int, payload: dict) -> ClassroomInvitationModel:

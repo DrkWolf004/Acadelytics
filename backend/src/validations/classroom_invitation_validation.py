@@ -31,9 +31,24 @@ def validate_send_invitation_data(payload: dict) -> tuple[bool, dict]:
     if classroom_id_error:
         errors["classroom_id"] = classroom_id_error
 
-    receiver_id_error = _validate_id("receiver_id", payload.get("receiver_id"), required=True)
-    if receiver_id_error:
-        errors["receiver_id"] = receiver_id_error
+    has_single_email = "correo" in payload and payload.get("correo") is not None
+    has_bulk_emails = "correos" in payload and payload.get("correos") is not None
+
+    if not has_single_email and not has_bulk_emails:
+        if "receiver_id" not in payload:
+            errors["correo"] = "Debes enviar un correo o una lista de correos."
+        else:
+            receiver_id_error = _validate_id("receiver_id", payload.get("receiver_id"), required=True)
+            if receiver_id_error:
+                errors["receiver_id"] = receiver_id_error
+    elif has_single_email:
+        correo = payload.get("correo")
+        if not isinstance(correo, str) or not correo.strip():
+            errors["correo"] = "El correo es obligatorio."
+    elif has_bulk_emails:
+        correos = payload.get("correos")
+        if not isinstance(correos, list) or not correos or not all(isinstance(item, str) and item.strip() for item in correos):
+            errors["correos"] = "La lista de correos debe contener correos válidos."
 
     return (len(errors) == 0, errors)
 

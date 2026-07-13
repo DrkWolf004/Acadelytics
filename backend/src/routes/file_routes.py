@@ -77,7 +77,6 @@ def get_file_raw_route(file_id: int):
                 candidate = os.path.join(root, str(class_folder_id), secure_name)
                 if os.path.exists(candidate):
                     mimetype, _ = mimetypes.guess_type(file_record.filename)
-                    logger.info("Serving file id=%s from candidate structured path=%s", file_id, candidate)
                     return send_file(candidate, mimetype=mimetype or "application/octet-stream", as_attachment=False)
 
 
@@ -91,17 +90,14 @@ def get_file_raw_route(file_id: int):
                     if secure_name in filenames:
                         candidate = os.path.join(dirpath, secure_name)
                         mimetype, _ = mimetypes.guess_type(file_record.filename)
-                        logger.info("Serving file id=%s found by walk at=%s", file_id, candidate)
                         return send_file(candidate, mimetype=mimetype or "application/octet-stream", as_attachment=False)
                     if searched > 500:
                         break
                 if searched > 500:
                     break
     except Exception:
-        logger.exception("Error while searching for alternative file path for file id %s", file_id)
+        pass
 
-
-    logger.warning("File raw not found for id=%s. saved_path=%s secure_name=%s tried_roots=%s", file_id, requested_path, secure_name, candidate_roots)
     return {"status": "error", "message": "Archivo no encontrado.", "code": 404}, 404
 
 

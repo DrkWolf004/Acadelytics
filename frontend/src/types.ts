@@ -69,6 +69,33 @@ export type FileRecord = {
   upload_at: string
 }
 
+export type Homework = {
+  id: number
+  classroom_id: number
+  title: string
+  description: string
+  explanation?: string | null
+  deadline_at: string
+  grade?: string | null
+  attached_file_id?: number | null
+  created_by_id?: number | null
+  create_at: string
+  update_at: string
+  response_count: number
+  student_status: 'pending' | 'received' | 'qualified'
+  response?: HomeworkResponse | null
+}
+
+export type HomeworkResponse = {
+  id: number
+  homework_id: number
+  student_id: number
+  explanation?: string | null
+  filename?: string | null
+  grade?: string | null
+  submitted_at: string
+}
+
 export type RequestResult<T> = {
   ok: boolean
   data?: T

@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from config.configEnv import HOST, PORT
 from config.configDb import connect_db
-from config.initial_setup import create_initial_users, create_uploads_folder, ensure_file_uploaded_by_column_exists
+from config.initial_setup import create_initial_users, create_uploads_folder, ensure_file_uploaded_by_column_exists, ensure_homework_responses_columns_exist
 from services.professor_validation_service import ensure_prof_validation_dir_exists
 from models import init_db
 from routes import register_routes
@@ -24,6 +24,7 @@ def initialize_db():
             connect_db()
             init_db()
             ensure_file_uploaded_by_column_exists()
+            ensure_homework_responses_columns_exist()
             create_initial_users()
             app._db_initialized = True
         except Exception as e:
@@ -37,6 +38,7 @@ def main():
         connect_db()
         init_db()
         ensure_file_uploaded_by_column_exists()
+        ensure_homework_responses_columns_exist()
         create_initial_users()
     except Exception as e:
         print(f"Advertencia inicial: {e}")

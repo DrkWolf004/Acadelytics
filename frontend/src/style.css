@@ -1098,3 +1098,206 @@ body.sidebar-open .sidebar {
   padding: 24px;
   font-style: italic;
 }
+
+.homework-modal-content {
+  display: grid;
+  gap: 24px;
+}
+
+.homework-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.homework-filter-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text);
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.homework-filter-btn.active,
+.homework-filter-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.homework-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+
+.homework-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.homework-item-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.homework-item-header h3,
+.homework-item-header p {
+  margin: 0;
+}
+
+.homework-item p {
+  color: var(--muted);
+}
+
+.homework-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.homework-badge.pending {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent);
+}
+
+.homework-badge.received {
+  background: #ecfdf5;
+  color: #166534;
+}
+
+.homework-badge.qualified {
+  background: #e0f2fe;
+  color: #0c4a6e;
+}
+
+.homework-grade {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.homework-grade.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.homework-grade.high {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.homework-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.homework-detail-card {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.homework-detail-card h3 {
+  margin: 0 0 14px;
+}
+
+.homework-response-form {
+  display: grid;
+  gap: 18px;
+}
+
+.homework-response-form label {
+  display: grid;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.homework-response-form textarea,
+.homework-response-form input[type="text"],
+.homework-response-form input[type="date"],
+.homework-response-form input[type="time"],
+.homework-response-form input[type="file"],
+.homework-response-form select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font: inherit;
+}
+
+.homework-response-form textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.homework-response-form input[type="file"] {
+  padding: 10px 12px;
+  background: var(--surface);
+}
+
+.homework-response-form input:focus,
+.homework-response-form textarea:focus,
+.homework-response-form select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  outline: none;
+}
+
+.homework-response-form .homework-actions {
+  justify-content: flex-end;
+}
+
+.homework-response-form .button.primary {
+  padding: 14px 24px;
+}
+
+.homework-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.homework-table th,
+.homework-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.homework-table th {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--text-h);
+  font-weight: 700;
+}
+
+.homework-table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.homework-table td button {
+  margin: 0;
+}

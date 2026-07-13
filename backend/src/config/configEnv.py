@@ -1,10 +1,16 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 try:
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-    if os.path.exists(dotenv_path):
+    project_root = Path(__file__).resolve().parents[3]
+    dotenv_path = project_root / '.env'
+    if dotenv_path.exists():
         load_dotenv(dotenv_path, encoding='utf-8')
+    else:
+        fallback_path = os.path.join(os.path.dirname(__file__), '.env')
+        if os.path.exists(fallback_path):
+            load_dotenv(fallback_path, encoding='utf-8')
 except Exception as e:
     print(f"Advertencia: Error cargando .env: {e}")
 

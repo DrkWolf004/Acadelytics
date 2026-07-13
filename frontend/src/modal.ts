@@ -1,3 +1,27 @@
+export function createModal(innerHtml: string, onClose: () => void): HTMLDivElement {
+  const overlay = document.createElement('div')
+  overlay.className = 'modal-overlay'
+  overlay.innerHTML = `
+    <div class="modal-dialog">
+      ${innerHtml}
+    </div>
+  `
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) {
+      onClose()
+    }
+  })
+  overlay.querySelector<HTMLDivElement>('.modal-dialog')?.addEventListener('click', (event) => event.stopPropagation())
+  document.body.appendChild(overlay)
+  return overlay
+}
+
+export function closeModal(modal: HTMLDivElement) {
+  if (document.body.contains(modal)) {
+    document.body.removeChild(modal)
+  }
+}
+
 export function showConfirmationPopup(message: string, title = 'Confirmación'): Promise<boolean> {
   return new Promise((resolve) => {
     const overlay = document.createElement('div')

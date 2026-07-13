@@ -7,6 +7,7 @@ from .class_folder_routes import class_folder_blueprint
 from .file_routes import file_blueprint
 from .classroom_invitation_routes import invitation_blueprint
 from .professor_validation_routes import professor_validation_blueprint
+from .homework_routes import homework_blueprint
 
 
 def register_routes(app: Flask) -> None:
@@ -17,3 +18,4 @@ def register_routes(app: Flask) -> None:
     app.register_blueprint(file_blueprint, url_prefix="/api/files")
     app.register_blueprint(invitation_blueprint, url_prefix="/api/invitations")
     app.register_blueprint(professor_validation_blueprint, url_prefix="/api/professor-validations")
+    app.register_blueprint(homework_blueprint, url_prefix="/api/homeworks")

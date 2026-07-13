@@ -14,7 +14,7 @@ try:
 except Exception as e:
     print(f"Advertencia: Error cargando .env: {e}")
 
-PORT = os.getenv('PORT', '5000')
+PORT = os.getenv('PORT') or os.getenv('BACKEND_PORT', '5000')
 HOST = os.getenv('HOST', '0.0.0.0')
 DB_USERNAME = os.getenv('DB_USERNAME') or os.getenv('DB_USER', 'postgres')
 PASSWORD = os.getenv('PASSWORD') or os.getenv('DB_PASSWORD', 'postgres')

@@ -33,7 +33,7 @@ services:
       DB_USER: "${DB_USER:-postgres}"
       DB_PASSWORD: "${DB_PASSWORD:-postgres}"
       DB_NAME: "${DB_NAME:-acadelytics}"
-      DB_HOST: "db"
+      DB_HOST: "${DB_HOST:-db}"
       DB_USERNAME: "${DB_USER:-postgres}"
       PASSWORD: "${DB_PASSWORD:-postgres}"
       DATABASE: "${DB_NAME:-acadelytics}"
@@ -45,8 +45,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-4173}:4173"

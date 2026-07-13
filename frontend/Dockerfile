@@ -1,14 +1,15 @@
 FROM node:20-alpine AS build
-WORKDIR /app
+WORKDIR /app/frontend
 
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
-COPY . .
+COPY frontend/. .
+COPY .env /app/.env
 RUN npm run build
 
 FROM node:20-alpine AS runtime
 RUN npm install -g serve
 WORKDIR /app
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/frontend/dist ./dist
 EXPOSE 4173
 CMD ["serve", "-s", "dist", "-l", "4173"]

@@ -17,6 +17,8 @@ Acadelytics es una plataforma educativa que emplea Machine Learning para ofrecer
 ```bash
 git clone https://github.com/DrkWolf004/Acadelytics.git
 cd Acadelytics
+cp Backend.env.example backend/src/config/.env
+cp frontend.env.example frontend/.env
 docker compose up
 ```
 

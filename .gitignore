@@ -1,6 +1,10 @@
 # Environment variables
 .env
 !.env.example
+backend/src/config/.env
+frontend/.env
+!Backend.env.example
+!frontend.env.example
 
 # IDE
 .vscode/

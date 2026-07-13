@@ -1,7 +1,7 @@
 import type { AuthResponse, RequestResult } from '../types'
 import { getAuthToken } from '../hooks/useLocalStorage'
 
-const API_BASE = 'http://localhost:5000/api'
+const API_BASE = (import.meta.env.VITE_BASE_URL || 'http://localhost:5000/api').replace(/\/$/, '')
 
 async function request<T>(url: string, options: RequestInit): Promise<RequestResult<T>> {
   try {

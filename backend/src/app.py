@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from config.configEnv import HOST, PORT
+from config.configEnv import HOST, PORT, CORS_ORIGINS
 from config.configDb import connect_db
 from config.initial_setup import create_initial_users, create_uploads_folder, ensure_file_uploaded_by_column_exists, ensure_homework_responses_columns_exist
 from services.professor_validation_service import ensure_prof_validation_dir_exists
@@ -8,7 +8,7 @@ from models import init_db
 from routes import register_routes
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:4173", "http://127.0.0.1:4173", "http://localhost:5173", "http://127.0.0.1:5173"], "supports_credentials": True}})
+CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS, "supports_credentials": True}})
 register_routes(app)
 
 @app.route('/')

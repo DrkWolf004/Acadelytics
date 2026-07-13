@@ -28,17 +28,17 @@ services:
     ports:
       - "${BACKEND_PORT:-5000}:5000"
     environment:
-      HOST: "0.0.0.0"
-      PORT: "5000"
+      HOST: "${HOST:-0.0.0.0}"
+      PORT: "${PORT:-5000}"
       DB_USER: "${DB_USER:-postgres}"
       DB_PASSWORD: "${DB_PASSWORD:-postgres}"
       DB_NAME: "${DB_NAME:-acadelytics}"
       DB_HOST: "${DB_HOST:-db}"
-      DB_USERNAME: "${DB_USER:-postgres}"
-      PASSWORD: "${DB_PASSWORD:-postgres}"
-      DATABASE: "${DB_NAME:-acadelytics}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      PASSWORD: "${PASSWORD:-postgres}"
+      DATABASE: "${DATABASE:-acadelytics}"
       ACCESS_TOKEN_SECRET: "${ACCESS_TOKEN_SECRET:-supersecret_jwt_key}"
-      COOKIE_KEY: "${COOKIE_KEY:-supersecret_cookie_key}"
+      cookieKey: "${cookieKey:-supersecret_cookie}"
       PYTHONUNBUFFERED: "1"
     networks:
       - acadelytics-network
@@ -47,7 +47,11 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        VITE_BASE_URL: "${VITE_BASE_URL:-http://localhost:5000/api}"
     restart: unless-stopped
+    environment:
+      VITE_BASE_URL: "${VITE_BASE_URL:-http://localhost:5000/api}"
     ports:
       - "${FRONTEND_PORT:-4173}:4173"
     networks:

@@ -27,6 +27,21 @@ def ensure_file_uploaded_by_column_exists():
         session.close()
 
 
+def ensure_homework_responses_columns_exist():
+    """Add grade and explanation columns to homework_responses table if needed."""
+    session = SessionLocal()
+    try:
+        session.execute(text("ALTER TABLE homework_responses ADD COLUMN IF NOT EXISTS explanation TEXT"))
+        session.execute(text("ALTER TABLE homework_responses ADD COLUMN IF NOT EXISTS grade VARCHAR(10)"))
+        session.commit()
+        print("=> Columnas explanation y grade verificadas en la tabla homework_responses")
+    except Exception as error:
+        session.rollback()
+        print(f"Error al verificar columnas de homework_responses: {error}")
+    finally:
+        session.close()
+
+
 def create_initial_users():
     session = SessionLocal()
     try:

@@ -38,6 +38,8 @@ La aplicación estará disponible en http://localhost:4173
 
 ```
 Acadelytics/
+├── .env.example
+├── .gitignore
 ├── docker-compose.yml
 ├── README.md
 ├── backend/
@@ -60,6 +62,8 @@ Acadelytics/
 │       │   ├── classroom_controller.py
 │       │   ├── classroom_invitation_controller.py
 │       │   ├── file_controller.py
+│       │   ├── homework_controller.py
+│       │   ├── professor_validation_controller.py
 │       │   └── user_controller.py
 │       ├── handlers/
 │       │   └── response_handlers.py
@@ -74,6 +78,9 @@ Acadelytics/
 │       │   ├── classroom_model.py
 │       │   ├── classroom_student_model.py
 │       │   ├── file_model.py
+│       │   ├── homework_model.py
+│       │   ├── homework_response_model.py
+│       │   ├── professor_validation_model.py
 │       │   └── user_model.py
 │       ├── routes/
 │       │   ├── __init__.py
@@ -82,6 +89,8 @@ Acadelytics/
 │       │   ├── classroom_invitation_routes.py
 │       │   ├── classroom_routes.py
 │       │   ├── file_routes.py
+│       │   ├── homework_routes.py
+│       │   ├── professor_validation_routes.py
 │       │   └── user_routes.py
 │       ├── services/
 │       │   ├── __init__.py
@@ -90,6 +99,8 @@ Acadelytics/
 │       │   ├── classroom_invitation_service.py
 │       │   ├── classroom_service.py
 │       │   ├── file_service.py
+│       │   ├── homework_service.py
+│       │   ├── professor_validation_service.py
 │       │   └── user_service.py
 │       └── validations/
 │           ├── __init__.py
@@ -97,6 +108,7 @@ Acadelytics/
 │           ├── classroom_invitation_validation.py
 │           ├── classroom_validation.py
 │           ├── file_validation.py
+│           ├── homework_validation.py
 │           └── user_validation.py
 ├── frontend/
 │   ├── Dockerfile
@@ -106,19 +118,21 @@ Acadelytics/
 │   ├── public/
 │   └── src/
 │       ├── app.ts
+│       ├── fileUpload.ts
+│       ├── hooks/
+│       │   └── useLocalStorage.ts
 │       ├── main.ts
 │       ├── modal.ts
 │       ├── style.css
 │       ├── types.ts
-│       ├── fileUpload.ts
-│       ├── hooks/
-│       │   └── useLocalStorage.ts
 │       ├── pages/
 │       │   ├── admin.ts
 │       │   ├── classrooms.ts
 │       │   ├── dashboard.ts
 │       │   ├── home.ts
+│       │   ├── homework.ts
 │       │   ├── login.ts
+│       │   ├── professorValidation.ts
 │       │   ├── profile.ts
 │       │   └── register.ts
 │       └── services/
@@ -126,5 +140,8 @@ Acadelytics/
 │           ├── authService.ts
 │           ├── classroomService.ts
 │           ├── fileService.ts
+│           ├── homeworkService.ts
+│           ├── invitationService.ts
+│           ├── professorValidationService.ts
 │           └── userService.ts
 ```

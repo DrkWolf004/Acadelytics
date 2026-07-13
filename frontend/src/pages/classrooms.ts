@@ -11,6 +11,7 @@ import {
   updateClassroom,
 } from '../services/classroomService'
 import { deleteFile, getFileRaw, getFilesByClassFolder, updateFile } from '../services/fileService'
+import { openHomeworkModule } from './homework'
 import type { Classroom, ClassroomMember, FileRecord } from '../types'
 
 function createModal(innerHtml: string, onClose: () => void): HTMLDivElement {
@@ -391,6 +392,7 @@ async function showClassroomActions(classroom: Classroom, currentRole: string | 
         <div class="modal-actions">
           <button class="button primary" id="view-folder">Ver carpeta</button>
           <button class="button outline" id="view-members">Ver miembros</button>
+          <button class="button outline" id="open-homework-module">Modulo de tareas</button>
           ${addMemberButton}
           ${canEdit ? '<button class="button outline" id="edit-classroom">Editar classroom</button>' : ''}
           ${canDelete ? '<button class="button danger" id="delete-classroom">Eliminar classroom</button>' : ''}
@@ -403,6 +405,11 @@ async function showClassroomActions(classroom: Classroom, currentRole: string | 
   modal.querySelector<HTMLButtonElement>('#view-folder')?.addEventListener('click', () => {
     closeModal(modal)
     showFilesModal(classroom)
+  })
+
+  modal.querySelector<HTMLButtonElement>('#open-homework-module')?.addEventListener('click', () => {
+    closeModal(modal)
+    void openHomeworkModule(classroom)
   })
 
   modal.querySelector<HTMLButtonElement>('#view-members')?.addEventListener('click', async () => {

@@ -11,6 +11,8 @@ from .file_model import FileModel
 from .classroom_student_model import ClassroomStudentModel
 from .classroom_invitation_model import ClassroomInvitationModel, InvitationStatus
 from .professor_validation_model import ProfessorValidationRequestModel, ValidationStatus
+from .homework_model import HomeworkModel
+from .homework_response_model import HomeworkResponseModel
 
 __all__ = [
     "Base",
@@ -26,6 +28,8 @@ __all__ = [
     "ClassroomStudentModel",
     "ClassroomInvitationModel",
     "InvitationStatus",
+    "HomeworkModel",
+    "HomeworkResponseModel",
 ]
 
 
